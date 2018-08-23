@@ -89,7 +89,7 @@ if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
 Channel
     .fromFilePairs( params.shortReads, size: 2 )
     .ifEmpty { exit 1, "Cannot find any reads matching: ${params.shortReads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!" }
-    .into { short_reads_qc; short_reads_assembly }
+    .into { short_reads_qc; short_reads_assembly; short_reads_correction }
 
 ///*
 // * Create a channel for input long read files
@@ -400,6 +400,51 @@ if (params.assembler == 'masurca') {
         mv CA.mr*/final.genome.scf.fasta final.genome.scf.fasta
         """
     }
+    assembly_result_scaffolds.into{ assembly_mapping; assembly_pilon }
+
+    
+    
+    // Map short reads to assembly with minimap2
+    process minimap {
+        tag "${sreads[0].baseName}"
+        publishDir "${params.outdir}/minimap", mode: 'copy'
+
+        input:
+        file assembly from assembly_mapping
+        set val(name), file(sreads) from short_reads_correction
+        output:
+        file "*" into minimap_alignment_results
+        file "*.sorted.bam" into short_reads_mapped_bam
+
+        script:
+        """
+        minimap2 -ax sr $assembly ${sreads[0]} ${sreads[1]} > sreads_assembly_aln.sam
+        samtools view -h -b sreads_assembly_aln.sam > sreads_assembly_aln.bam
+        samtools sort sreads_assembly_aln.bam > sreads_assembly_aln.sorted.bam
+        """
+
+    }
+    
+    
+    // Polish assembly with pilon
+    process pilon {
+        tag "canu_assembly"
+        publishDir "${params.outdir}/pilon", mode: 'copy'
+
+        input:
+        file sr_bam from short_reads_mapped_bam
+        file assembly from assembly_pilon
+
+        output:
+        file "*" into assembly_results_scaffolds_pilon
+
+        script:
+        """
+        samtools index $sr_bam
+        pilon --genome $assembly --bam $sr_bam
+        """
+
+    }
 
 
     // Quast for masurca pipeline
@@ -407,7 +452,7 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}", mode: 'copy'
 
         input:
-        file scaffolds from assembly_results_scaffolds
+        file scaffolds from assembly_results_scaffolds_pilon
 
         output:
         file "*" into quast_results
