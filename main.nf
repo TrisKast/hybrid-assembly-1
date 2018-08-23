@@ -61,7 +61,7 @@ params.longReads = ""
 params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
 params.email = false
 params.plaintext_email = false
-params.assembler = "spades"
+params.assembler = "masurca"
 params.genomeSize = 0
 
 multiqc_config = file(params.multiqc_config)
