@@ -247,7 +247,7 @@ if (params.assembler == 'spades') {
         """
 
     }
-    assembly_result_scaffolds.into{ assembly_mapping; assembly_pilon }
+    assembly_results_scaffolds.into{ assembly_mapping; assembly_pilon }
     
     // Map short reads to assembly with minimap2
     process minimap {
@@ -257,6 +257,7 @@ if (params.assembler == 'spades') {
         input:
         file assembly from assembly_mapping
         set val(name), file(sreads) from short_reads_correction
+        
         output:
         file "*" into minimap_alignment_results
         file "*.sorted.bam" into short_reads_mapped_bam
@@ -442,7 +443,7 @@ if (params.assembler == 'masurca') {
         mv CA.mr*/final.genome.scf.fasta final.genome.scf.fasta
         """
     }
-    assembly_result_scaffolds.into{ assembly_mapping; assembly_pilon }
+    assembly_results_scaffolds.into{ assembly_mapping; assembly_pilon }
 
     
     
