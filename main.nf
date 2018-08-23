@@ -502,7 +502,7 @@ if (params.assembler == 'masurca') {
 
         script:
         """
-        quast $scaffolds
+        quast-lg.py $scaffolds
         """
     }
 
