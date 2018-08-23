@@ -377,6 +377,7 @@ process pilon {
         publishDir "${params.outdir}", mode: 'copy'
 
         input:
+        file fasta from fasta
         file scaffolds from assembly_results_scaffolds_pilon
 
         output:
@@ -384,7 +385,7 @@ process pilon {
 
         script:
         """
-        quast $scaffolds
+        quast -r $fasta $scaffolds
         """
 
     }
