@@ -15,7 +15,7 @@
 def helpMessage() {
     log.info"""
     =========================================
-     hybrid-assembly v${params.version}
+     hybrid-assembly //v${params.version}
     =========================================
     Usage:
 
@@ -103,7 +103,7 @@ Channel
 
 // Header log info
 log.info "========================================="
-log.info " hybrid-assembly v${params.version}"
+log.info " hybrid-assembly"
 log.info "========================================="
 def summary = [:]
 summary['Run Name']     = custom_runName ?: workflow.runName
