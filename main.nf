@@ -329,6 +329,27 @@ if (params.assembler == 'masurca') {
     
 }
 
+// Map short reads to assembly with minimap2
+process minimap {
+    tag "${sreads[0].baseName}"
+    publishDir "${params.outdir}/minimap", mode: 'copy'
+
+    input:
+    file assembly from assembly_mapping
+    set val(name), file(sreads) from short_reads_correction
+        
+    output:
+    file "*" into minimap_alignment_results
+    file "*.sorted.bam" into short_reads_mapped_bam
+
+    script:
+    """
+    minimap2 -ax sr $assembly ${sreads[0]} ${sreads[1]} > sreads_assembly_aln.sam
+    samtools view -h -b sreads_assembly_aln.sam > sreads_assembly_aln.bam
+    samtools sort sreads_assembly_aln.bam > sreads_assembly_aln.sorted.bam
+    """
+}
+
     
     
 // Polish assembly with pilon
