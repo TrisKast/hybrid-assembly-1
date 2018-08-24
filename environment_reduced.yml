@@ -11,3 +11,4 @@ dependencies:
   - gnuplot=5.2.3
   - multiqc=1.6
   - quast=5.0
+  - prinseq=0.20.4
