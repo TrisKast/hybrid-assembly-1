@@ -98,7 +98,7 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { long_reads_qc; long_reads_assembly; long_reads_scaffolding }
+        .into { long_reads_qc; long_reads_assembly; long_reads_scaffolding; long_reads_filtering }
 
 
 
