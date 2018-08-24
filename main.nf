@@ -208,7 +208,31 @@ process fastqc {
 }*/
 
 /**
- * STEP 2 Assembly
+ * STEP 2 Pre-processing
+ */
+ 
+ process prinseq {
+ 
+    publishDir "${params.outdir}/prinseq", mode: 'copy'
+    
+    input:
+    file lreads from long_reads_preprocess
+    
+    output:
+    file "prinseq_good" into filtered_longreads
+    file * into prinseq_results
+    
+    script:
+    """
+    prinseq-lite.pl -fasta $lreads -min_len 500 -out_good prinseq_good
+
+    """
+ 
+ }
+
+
+/**
+ * STEP 3 Assembly
  */
 
 /**
@@ -226,7 +250,7 @@ if (params.assembler == 'spades') {
         input:
         file fasta from fasta
         set val(name), file(sreads) from short_reads_assembly
-        file lreads from long_reads_assembly
+        file lreads from filtered_longreads
 
         output:
         file "scaffolds.fasta" into assembly_results
@@ -270,7 +294,7 @@ if (params.assembler == 'canu') {
         publishDir "${params.outdir}/canu", mode: 'copy'
 
         input:
-        file lreads from long_reads_assembly
+        file lreads from filtered_longreads
 
         output:
         file "*contigs.fasta" into assembly_results
@@ -302,7 +326,7 @@ if (params.assembler == 'masurca') {
         input:
         file fasta from fasta
         set val(name), file(sreads) from short_reads_assembly
-        file lreads from long_reads_assembly
+        file lreads from filtered_longreads
 
         output:
         file "masurca_config.txt" into masurca_config_file
