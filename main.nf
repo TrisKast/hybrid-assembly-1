@@ -58,13 +58,13 @@ params.name = false
 params.fasta = false
 params.shortReads = ""
 params.longReads = ""
-params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
+//params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
 params.email = false
 params.plaintext_email = false
 params.assembler = "spades"
 params.genomeSize = 0
 
-multiqc_config = file(params.multiqc_config)
+//multiqc_config = file(params.multiqc_config)
 
 // Validate inputs
 if ( params.fasta ){
@@ -155,10 +155,8 @@ process get_software_versions {
     echo $params.version > v_pipeline.txt
     echo $workflow.nextflow.version > v_nextflow.txt
     fastqc --version > v_fastqc.txt
-    multiqc --version > v_multiqc.txt
     spades.py --version > v_spades.txt
     canu --version > v_canu.txt
-    quast --version > v_quast.txt
     minimap2 --version > v_minimap.txt
     pilon --version > v_pilon.txt
     scrape_software_versions.py > software_versions_mqc.yaml
@@ -188,7 +186,7 @@ process fastqc {
 /**
  * STEP 1.2 QC for long reads
  */
-process nanoqc {
+/*process nanoqc {
     tag "${lreads.baseName}"
     publishDir "${params.outdir}/nanoqc", mode: 'copy'
 
@@ -204,7 +202,7 @@ process nanoqc {
     source activate nanoqc-env
     NanoPlot $ftype $lreads
     """
-}
+}*/
 
 /**
  * STEP 2 Assembly
@@ -287,7 +285,7 @@ if (params.assembler == 'spades') {
         script:
         """
         samtools index $sr_bam
-        pilon --genome $assembly --bam $sr_bam
+        java -Xmx80G -jar /opt/conda/pkgs/pilon-1.22-py27_0/share/pilon-1.22-0/pilon-1.22.jar --threads 15 --genome $assembly --bam $sr_bam
         """
 
     }
@@ -304,7 +302,7 @@ if (params.assembler == 'spades') {
 
         script:
         """
-        quast $scaffolds
+        quast-lg.py -r $fasta $scaffolds
         """
 
     }
@@ -384,7 +382,7 @@ if (params.assembler == 'canu') {
         script:
         """
         samtools index $sr_bam
-        pilon --genome $assembly --bam $sr_bam
+        java -Xmx80G -jar /opt/conda/pkgs/pilon-1.22-py27_0/share/pilon-1.22-0/pilon-1.22.jar --threads 15 --genome $assembly --bam $sr_bam
         """
 
     }
@@ -401,7 +399,7 @@ if (params.assembler == 'canu') {
 
         script:
         """
-        quast --scaffolds $scaffolds
+        quast-lg.py -r $fasta $scaffolds
         """
     }
 
@@ -484,7 +482,7 @@ if (params.assembler == 'masurca') {
         script:
         """
         samtools index $sr_bam
-        pilon --genome $assembly --bam $sr_bam
+        java -Xmx80G -jar /opt/conda/pkgs/pilon-1.22-py27_0/share/pilon-1.22-0/pilon-1.22.jar --threads 15 --genome $assembly --bam $sr_bam
         """
 
     }
@@ -502,7 +500,7 @@ if (params.assembler == 'masurca') {
 
         script:
         """
-        quast $scaffolds
+        quast-lg.py -r $fasta $scaffolds
         """
     }
 
@@ -513,7 +511,7 @@ if (params.assembler == 'masurca') {
  * Step 3 MultiQC
  * collect the results
  */
-process multiqc {
+/*process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
 
     input:
@@ -532,7 +530,7 @@ process multiqc {
     """
     multiqc -f $rtitle $rfilename --config $multiqc_config .
     """
-}
+}*/
 
 
 
