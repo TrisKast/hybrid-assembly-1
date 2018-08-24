@@ -188,7 +188,7 @@ process fastqc {
 /**
  * STEP 1.2 QC for long reads
  */
-process nanoqc {
+/*process nanoqc {
     tag "${lreads.baseName}"
     publishDir "${params.outdir}/nanoqc", mode: 'copy'
 
@@ -204,7 +204,7 @@ process nanoqc {
     source activate nanoqc-env
     NanoPlot $ftype $lreads
     """
-}
+}*/
 
 /**
  * STEP 2 Assembly
