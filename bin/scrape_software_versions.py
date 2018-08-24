@@ -7,8 +7,8 @@ regexes = {
     'hybrid-assembly': ['v_pipeline.txt', r"(\S+)"],
     'Nextflow': ['v_nextflow.txt', r"(\S+)"],
     'FastQC': ['v_fastqc.txt', r"FastQC v(\S+)"],
-    //'MultiQC': ['v_multiqc.txt', r"multiqc, version (\S+)"],
-    //'QUAST': ['v_quast.txt', r"WARNING: Python locale settings can't be changed\nQUAST v(\S+)"],
+    #'MultiQC': ['v_multiqc.txt', r"multiqc, version (\S+)"],
+    #'QUAST': ['v_quast.txt', r"WARNING: Python locale settings can't be changed\nQUAST v(\S+)"],
     'Canu': ['v_canu.txt', r"Canu (\S+)"],
     'SPAdes': ['v_spades.txt', r"SPAdes v(\S+)"],
     'minimap2': ['v_minimap.txt', r"(\S+)"],
@@ -18,8 +18,8 @@ results = OrderedDict()
 results['hybrid-assembly'] = '<span style="color:#999999;\">N/A</span>'
 results['Nextflow'] = '<span style="color:#999999;\">N/A</span>'
 results['FastQC'] = '<span style="color:#999999;\">N/A</span>'
-//results['MultiQC'] = '<span style="color:#999999;\">N/A</span>'
-//results['QUAST'] = '<span style="color:#999999;\">N/A</span>'
+#results['MultiQC'] = '<span style="color:#999999;\">N/A</span>'
+#results['QUAST'] = '<span style="color:#999999;\">N/A</span>'
 results['Canu'] = '<span style="color:#999999;\">N/A</span>'
 results['SPAdes'] = '<span style="color:#999999;\">N/A</span>'
 results['minimap2'] = '<span style="color:#999999;\">N/A</span>'
