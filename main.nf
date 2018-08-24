@@ -250,8 +250,8 @@ if (params.assembler == 'spades') {
         input:
         file fasta from fasta
         set val(name), file(sreads) from short_reads_assembly
-        file lreads from filtered_longreads
-
+        file lreads from long_reads_assembly
+        
         output:
         file "scaffolds.fasta" into assembly_results
         file "contigs.fasta" into assembly_results_contigs
@@ -294,8 +294,8 @@ if (params.assembler == 'canu') {
         publishDir "${params.outdir}/canu", mode: 'copy'
 
         input:
-        file lreads from filtered_longreads
-
+        file lreads from long_reads_assembly
+        
         output:
         file "*contigs.fasta" into assembly_results
         file "*" into canu_results
@@ -326,7 +326,7 @@ if (params.assembler == 'masurca') {
         input:
         file fasta from fasta
         set val(name), file(sreads) from short_reads_assembly
-        file lreads from filtered_longreads
+        file lreads from long_reads_assembly
 
         output:
         file "masurca_config.txt" into masurca_config_file
