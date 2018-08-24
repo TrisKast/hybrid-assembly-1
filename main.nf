@@ -368,7 +368,7 @@ process pilon {
      """
      samtools index $sr_bam
      
-     java -Xmx80G -jar /opt/conda/pkgs/pilon-1.22-py27_0/share/pilon-1.22-0/pilon-1.22.jar --threads 15 --genome $assembly --bam $sr_bam
+     java -Xmx80G -jar /opt/conda/pkgs/pilon-1.22-1/share/pilon-1.22-1/pilon-1.22.jar --threads 15 --genome $assembly --bam $sr_bam
      """
 
 }
