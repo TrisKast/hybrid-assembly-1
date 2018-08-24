@@ -155,7 +155,6 @@ process get_software_versions {
     echo $params.version > v_pipeline.txt
     echo $workflow.nextflow.version > v_nextflow.txt
     fastqc --version > v_fastqc.txt
-    multiqc --version > v_multiqc.txt
     spades.py --version > v_spades.txt
     canu --version > v_canu.txt
     quast --version > v_quast.txt
