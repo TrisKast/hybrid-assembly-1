@@ -63,6 +63,7 @@ params.email = false
 params.plaintext_email = false
 params.assembler = "masurca"
 params.genomeSize = 0
+params.pilon = true
 
 multiqc_config = file(params.multiqc_config)
 
@@ -272,7 +273,7 @@ if (params.assembler == 'canu') {
         file lreads from long_reads_assembly
 
         output:
-        file "*contigs.fasta" into assembly_result
+        file "*contigs.fasta" into assembly_results
         file "*" into canu_results
 
         script:
@@ -285,7 +286,7 @@ if (params.assembler == 'canu') {
         minOverlapLength=$params.minOverlapLength
         """
     }
-    assembly_result.into{ assembly_mapping; assembly_pilon }
+    assembly_results.into{ assembly_mapping; assembly_pilon }
 
 }
 
@@ -328,53 +329,58 @@ if (params.assembler == 'masurca') {
     
 }
 
-// Map short reads to assembly with minimap2
-process minimap {
-    tag "${sreads[0].baseName}"
-    publishDir "${params.outdir}/minimap", mode: 'copy'
+if(params.pilon){
 
-    input:
-    file assembly from assembly_mapping
-    set val(name), file(sreads) from short_reads_correction
-        
-    output:
-    file "*" into minimap_alignment_results
-    file "*.sorted.bam" into short_reads_mapped_bam
+  // Map short reads to assembly with minimap2
+  process minimap {
+      tag "${sreads[0].baseName}"
+      publishDir "${params.outdir}/minimap", mode: 'copy'
 
-    script:
-    """
-    minimap2 -ax sr $assembly ${sreads[0]} ${sreads[1]} > sreads_assembly_aln.sam
-    samtools view -h -b sreads_assembly_aln.sam > sreads_assembly_aln.bam
-    samtools sort sreads_assembly_aln.bam > sreads_assembly_aln.sorted.bam
-    """
+      input:
+      file assembly from assembly_mapping
+      set val(name), file(sreads) from short_reads_correction
+
+      output:
+      file "*" into minimap_alignment_results
+      file "*.sorted.bam" into short_reads_mapped_bam
+
+      script:
+      """
+      minimap2 -ax sr $assembly ${sreads[0]} ${sreads[1]} > sreads_assembly_aln.sam
+      samtools view -h -b sreads_assembly_aln.sam > sreads_assembly_aln.bam
+      samtools sort sreads_assembly_aln.bam > sreads_assembly_aln.sorted.bam
+      """
+  }
+
+
+
+  // Polish assembly with pilon
+  process pilon {
+       tag "canu_assembly"
+       publishDir "${params.outdir}/pilon", mode: 'copy'
+
+       input:
+       file sr_bam from short_reads_mapped_bam
+       file assembly from assembly_pilon
+
+       output:
+       file "*" into pilon_results
+       file "pilon.fasta" into pilon_scaffold
+
+       script:
+       """
+       samtools index $sr_bam
+
+       java -Xmx80G -jar /opt/conda/pkgs/pilon-1.22-1/share/pilon-1.22-1/pilon-1.22.jar --threads 15 --genome $assembly --bam $sr_bam
+       """
+
+  }
 }
 
-    
-    
-// Polish assembly with pilon
-process pilon {
-     tag "canu_assembly"
-     publishDir "${params.outdir}/pilon", mode: 'copy'
-
-     input:
-     file sr_bam from short_reads_mapped_bam
-     file assembly from assembly_pilon
-
-     output:
-     file "*" into pilon_results
-     file "pilon.fasta" into pilon_scaffold
-
-     script:
-     """
-     samtools index $sr_bam
-     
-     java -Xmx80G -jar /opt/conda/pkgs/pilon-1.22-1/share/pilon-1.22-1/pilon-1.22.jar --threads 15 --genome $assembly --bam $sr_bam
-     """
-
-}
+if(params.pilon){
 
     // Assess assembly with quast
-    process quast{
+    process quast_w_pilon{
         publishDir "${params.outdir}", mode: 'copy'
 
         input:
@@ -389,7 +395,27 @@ process pilon {
         quast $scaffolds -R $fasta --large --threads 20
         """
 
+}
+}else{
+
+    // Assess assembly with quast
+    process quast_wo_pilon{
+        publishDir "${params.outdir}", mode: 'copy'
+
+        input:
+        file fasta from fasta
+        file scaffolds from assembly_results
+
+        output:
+        file "*" into quast_results
+
+        script:
+        """
+        quast $scaffolds -R $fasta --large --threads 20
+        """
+
     }
+ }
 
 
 /*
