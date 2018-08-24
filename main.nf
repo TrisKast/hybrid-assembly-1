@@ -386,7 +386,7 @@ process pilon {
 
         script:
         """
-        quast -r $fasta $scaffolds
+        quast $scaffolds -R $fasta
         """
 
     }
