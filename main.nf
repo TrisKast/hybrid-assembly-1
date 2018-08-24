@@ -346,7 +346,7 @@ if(params.pilon){
 
       script:
       """
-      minimap2 -ax sr $assembly ${sreads[0]} ${sreads[1]} > sreads_assembly_aln.sam
+      minimap2 -t 15 -ax sr $assembly ${sreads[0]} ${sreads[1]} > sreads_assembly_aln.sam
       samtools view -h -b sreads_assembly_aln.sam > sreads_assembly_aln.bam
       samtools sort sreads_assembly_aln.bam > sreads_assembly_aln.sorted.bam
       """
