@@ -211,7 +211,7 @@ process fastqc {
  * STEP 2 Pre-processing
  */
  
- process prinseq {
+ /*process prinseq {
  
     publishDir "${params.outdir}/prinseq", mode: 'copy'
     
@@ -220,7 +220,7 @@ process fastqc {
     
     output:
     file "prinseq_good" into filtered_longreads
-    file * into prinseq_results
+    file "*" into prinseq_results
     
     script:
     """
@@ -228,7 +228,7 @@ process fastqc {
 
     """
  
- }
+ }*/
 
 
 /**
