@@ -304,7 +304,7 @@ if (params.assembler == 'spades') {
 
         script:
         """
-        quast $scaffolds
+        quast-lg.py -r $ref $scaffolds
         """
 
     }
@@ -401,7 +401,7 @@ if (params.assembler == 'canu') {
 
         script:
         """
-        quast --scaffolds $scaffolds
+        quast-lg.py -r $ref $scaffolds
         """
     }
 
@@ -502,7 +502,7 @@ if (params.assembler == 'masurca') {
 
         script:
         """
-        quast-lg.py $scaffolds
+        quast-lg.py -r $ref $scaffolds
         """
     }
 
