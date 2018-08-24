@@ -157,7 +157,6 @@ process get_software_versions {
     fastqc --version > v_fastqc.txt
     spades.py --version > v_spades.txt
     canu --version > v_canu.txt
-    quast --version > v_quast.txt
     minimap2 --version > v_minimap.txt
     pilon --version > v_pilon.txt
     scrape_software_versions.py > software_versions_mqc.yaml
