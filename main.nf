@@ -248,7 +248,7 @@ if (params.assembler == 'spades') {
         """
 
     }
-    assembly_results.into{ assembly_mapping; assembly_pilon }
+    assembly_results.into{ assembly_mapping; assembly_pilon; quast_wo_pilon }
 
 }
 
@@ -286,7 +286,7 @@ if (params.assembler == 'canu') {
         minOverlapLength=$params.minOverlapLength
         """
     }
-    assembly_results.into{ assembly_mapping; assembly_pilon }
+    assembly_results.into{ assembly_mapping; assembly_pilon; quast_wo_pilon }
 
 }
 
@@ -325,7 +325,7 @@ if (params.assembler == 'masurca') {
         mv CA.mr*/final.genome.scf.fasta final.genome.scf.fasta
         """
     }
-    assembly_results.into{ assembly_mapping; assembly_pilon }
+    assembly_results.into{ assembly_mapping; assembly_pilon; quast_wo_pilon }
     
 }
 
@@ -404,8 +404,7 @@ if(params.pilon){
 
         input:
         file fasta from fasta
-        file scaffolds from assembly_results
-
+        file scaffolds from quast_wo_pilon
         output:
         file "*" into quast_results
 
