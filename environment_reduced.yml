@@ -9,3 +9,4 @@ dependencies:
   - spades=3.12.0
   - fastqc=0.11.7
   - gnuplot=5.2.3
+  - multiqc=1.6
