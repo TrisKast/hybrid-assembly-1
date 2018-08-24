@@ -228,7 +228,7 @@ if (params.assembler == 'spades') {
         file lreads from long_reads_assembly
 
         output:
-        file "scaffolds.fasta" into assembly_results_scaffolds
+        file "scaffolds.fasta" into assembly_results
         file "contigs.fasta" into assembly_results_contigs
         file "*" into spades_results
 
@@ -247,7 +247,7 @@ if (params.assembler == 'spades') {
         """
 
     }
-    assembly_results_scaffolds.into{ assembly_mapping; assembly_pilon }
+    assembly_results.into{ assembly_mapping; assembly_pilon }
 
 }
 
@@ -272,7 +272,7 @@ if (params.assembler == 'canu') {
         file lreads from long_reads_assembly
 
         output:
-        file "*contigs.fasta" into assembly_result_canu
+        file "*contigs.fasta" into assembly_result
         file "*" into canu_results
 
         script:
@@ -285,7 +285,7 @@ if (params.assembler == 'canu') {
         minOverlapLength=$params.minOverlapLength
         """
     }
-    assembly_result_canu.into{ assembly_mapping; assembly_pilon }
+    assembly_result.into{ assembly_mapping; assembly_pilon }
 
 }
 
@@ -305,8 +305,7 @@ if (params.assembler == 'masurca') {
 
         output:
         file "masurca_config.txt" into masurca_config_file
-        file "final.genome.scf.fasta" into assembly_results_scaffolds
-
+        file "final.genome.scf.fasta" into assembly_results
         script:
         cg = params.close_gaps ? "--close_gaps" : ""
         hc = params.high_cov ? "--high_cov" : ""
@@ -325,7 +324,7 @@ if (params.assembler == 'masurca') {
         mv CA.mr*/final.genome.scf.fasta final.genome.scf.fasta
         """
     }
-    assembly_results_scaffolds.into{ assembly_mapping; assembly_pilon }
+    assembly_results.into{ assembly_mapping; assembly_pilon }
     
 }
 
@@ -362,8 +361,8 @@ process pilon {
      file assembly from assembly_pilon
 
      output:
-     file "*" into assembly_results_scaffolds_pilon
-     file "pilon.fasta" into scaffolds_pilon
+     file "*" into pilon_results
+     file "pilon.fasta" into pilon_scaffold
 
      script:
      """
@@ -380,7 +379,7 @@ process pilon {
 
         input:
         file fasta from fasta
-        file scaffolds from scaffolds_pilon
+        file scaffolds from pilon_scaffold
 
         output:
         file "*" into quast_results
