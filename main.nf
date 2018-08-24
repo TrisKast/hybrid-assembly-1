@@ -363,6 +363,7 @@ process pilon {
 
      output:
      file "*" into assembly_results_scaffolds_pilon
+     file "pilon.fasta" into scaffolds_pilon
 
      script:
      """
@@ -374,12 +375,12 @@ process pilon {
 }
 
     // Assess assembly with quast
-    process quast_spades {
+    process quast{
         publishDir "${params.outdir}", mode: 'copy'
 
         input:
         file fasta from fasta
-        file scaffolds from assembly_results_scaffolds_pilon
+        file scaffolds from scaffolds_pilon
 
         output:
         file "*" into quast_results
