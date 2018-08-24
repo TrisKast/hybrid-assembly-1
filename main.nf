@@ -58,13 +58,13 @@ params.name = false
 params.fasta = false
 params.shortReads = ""
 params.longReads = ""
-params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
+//params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
 params.email = false
 params.plaintext_email = false
 params.assembler = "spades"
 params.genomeSize = 0
 
-multiqc_config = file(params.multiqc_config)
+//multiqc_config = file(params.multiqc_config)
 
 // Validate inputs
 if ( params.fasta ){
@@ -513,7 +513,7 @@ if (params.assembler == 'masurca') {
  * Step 3 MultiQC
  * collect the results
  */
-process multiqc {
+/*process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
 
     input:
@@ -532,7 +532,7 @@ process multiqc {
     """
     multiqc -f $rtitle $rfilename --config $multiqc_config .
     """
-}
+}*/
 
 
 
