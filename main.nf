@@ -99,7 +99,7 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { long_reads_qc; long_reads_assembly; long_reads_scaffolding; long_reads_filtering }
+        .into { long_reads_qc; long_reads_filtering }
 
 
 
@@ -212,12 +212,12 @@ process fastqc {
  * STEP 2 Pre-processing
  */
  
- /*process prinseq {
+ process prinseq {
  
     publishDir "${params.outdir}/prinseq", mode: 'copy'
     
     input:
-    file lreads from long_reads_preprocess
+    file lreads from long_reads_filtering
     
     output:
     file "prinseq_good" into filtered_longreads
@@ -229,8 +229,9 @@ process fastqc {
 
     """
  
- }*/
-
+ }
+ filtered_longreads.into{ long_reads_assembly; long_reads_scaffolding}
+ 
 
 /**
  * STEP 3 Assembly
