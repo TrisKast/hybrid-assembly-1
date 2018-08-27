@@ -363,6 +363,10 @@ if (params.assembler == 'masurca') {
     
 }
 
+/**
+ * STEP 4 Polishing
+ */
+
 if(params.pilon){
 
   // Map short reads to assembly with minimap2
@@ -412,6 +416,10 @@ if(params.pilon){
 
 }
 
+/**
+ * STEP 4 Assembly Evaluation
+ */
+
 if(params.pilon){
 
     // Assess assembly with quast
@@ -451,6 +459,10 @@ if(params.pilon){
 
     }
  }
+ 
+ /**
+ * STEP 6 SV-Detection
+ */
  
  process ngml{
       publishDir "${params.outdir}", mode: 'copy'
@@ -493,7 +505,7 @@ if(params.pilon){
 
 
 /*
- * Step 3 MultiQC
+ * Step 7 MultiQC
  * collect the results
  */
 process multiqc {
