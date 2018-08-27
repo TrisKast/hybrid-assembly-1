@@ -12,3 +12,4 @@ dependencies:
   - multiqc=1.6
   - quast=5.0
   - prinseq=0.20.4
+  - kraken-all=v0.10.6_eaf8fb68
