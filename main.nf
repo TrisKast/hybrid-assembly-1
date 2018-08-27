@@ -220,7 +220,7 @@ process fastqc {
     file lreads from long_reads_filtering
     
     output:
-    file "prinseq_good" into filtered_longreads
+    file "prinseq_good.fasta" into filtered_longreads
     file "*" into prinseq_results
     
     script:
