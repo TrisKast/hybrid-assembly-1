@@ -100,6 +100,14 @@ Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
         .into { long_reads_qc; long_reads_filtering }
+        
+///*
+// * Create a channel for reference fasta file
+// */
+Channel
+        .fromPath( params.fasta )
+        .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
+        .into { spades_assembly; quast_reference_w_pilon; quast_reference_wo_pilon; sv_reference }
 
 
 
@@ -250,7 +258,7 @@ if (params.assembler == 'spades') {
         publishDir "${params.outdir}/spades", mode: 'copy'
 
         input:
-        file fasta from fasta
+        file fasta from spades_assembly
         set val(name), file(sreads) from short_reads_assembly
         file lreads from long_reads_assembly
         
@@ -401,6 +409,8 @@ if(params.pilon){
        """
 
   }
+  pilon_scaffold.into{ quast_input; sv_mapping }
+
 }
 
 if(params.pilon){
@@ -410,8 +420,8 @@ if(params.pilon){
         publishDir "${params.outdir}", mode: 'copy'
 
         input:
-        file fasta from fasta
-        file scaffolds from pilon_scaffold
+        file fasta from quast_reference_w_pilon
+        file scaffolds from quast_input
 
         output:
         file "*" into quast_results
@@ -429,7 +439,7 @@ if(params.pilon){
         publishDir "${params.outdir}", mode: 'copy'
 
         input:
-        file fasta from fasta
+        file fasta from quast_reference_wo_pilon
         file scaffolds from quast_wo_pilon
         output:
         file "*" into quast_results
@@ -441,6 +451,8 @@ if(params.pilon){
 
     }
  }
+ 
+ 
 
 
 /*
