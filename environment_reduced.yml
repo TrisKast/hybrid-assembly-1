@@ -13,3 +13,5 @@ dependencies:
   - quast=5.0
   - prinseq=0.20.4
   - kraken-all=0.10.6_eaf8fb68
+  - ngmlr=0.2.7
+  - sniffles=1.0.8
