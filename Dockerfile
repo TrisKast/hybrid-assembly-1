@@ -11,3 +11,7 @@ RUN cd /opt/; tar -xzvf MaSuRCA-3.2.7.tar.gz; cd MaSuRCA-3.2.7; ./install.sh
 ENV PATH $PATH:/opt/MaSuRCA-3.2.7/bin
 
 RUN conda install -c bioconda samtools
+
+# minikraken DB 
+RUN mkdir /kraken_db/ && cd /kraken_db/ && wget https://ccb.jhu.edu/software/kraken/dl/minikraken.tgz && tar xf minikraken.tgz && rm minikraken.tgz
+ENV KRAKEN_DB_PATH="/kraken_db:${KRAKEN_DB_PATH}"
