@@ -390,7 +390,6 @@ if(params.pilon){
 
   // Polish assembly with pilon
   process pilon {
-       tag "canu_assembly"
        publishDir "${params.outdir}/pilon", mode: 'copy'
 
        input:
@@ -441,6 +440,7 @@ if(params.pilon){
         input:
         file fasta from quast_reference_wo_pilon
         file scaffolds from quast_wo_pilon
+        
         output:
         file "*" into quast_results
 
@@ -451,6 +451,43 @@ if(params.pilon){
 
     }
  }
+ 
+ process ngml{
+      publishDir "${params.outdir}", mode: 'copy'
+      
+      input:
+      file fasta from sv_reference
+      file lr from sv_mapping
+      
+      output:
+      file "ngml_mapping_sorted.bam" into sv_bam
+      file "*" into ngml_results
+      
+      script:
+      """
+      ngmlr -r $fasta -q $lr -o ngml_mapping.sam -t 20 -x ont
+      samtools view -Sb ngml_mapping.sam > ngml_mapping.bam
+      samtools sort ngml_mapping.bam > ngml_mapping_sorted.bam
+      """
+ }
+ 
+ process sniffles{
+        publishDir "${params.outdir}", mode: 'copy'
+        
+        input: 
+        file sorted.bam from sv_bam
+        
+        output: 
+        file "sniffles.vcf" into sniffles_vcf
+        file "*" into sniffles_results
+        
+        script:
+        """
+        sniffles -m $sorted.bam -v sniffles.vcf
+        """
+ 
+ }
+
  
  
 
