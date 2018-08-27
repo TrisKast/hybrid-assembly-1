@@ -21,7 +21,7 @@ def helpMessage() {
 
     The typical command for running the pipeline is as follows:
 
-    nextflow run kevinmenden/hybrid-assembly --shortReads '*_R{1,2}.fastq.gz' --longReads 'nano_reads.fastq.gz' --assembler spades  -profile docker
+    nextflow run tristankast/hybrid_assembly --shortReads '*_R{1,2}.fastq.gz' --longReads 'nano_reads.fastq.gz' --assembler masurca --masurca_genomsize 100200000  -profile galaxy
 
     Mandatory arguments:
       --assembler                   The assembler pipeline to choose. One of 'spades' | 'canu' | 'masurca'
@@ -35,6 +35,7 @@ def helpMessage() {
 
     Options:
       --lr_type                     Long read technology. One of 'nanopore' | 'pacbio' . Default: 'nanopore'
+      --pilon                       Activates assembly correction with pilon
 
     Other options:
       --outdir                      The output directory where the results will be saved
