@@ -487,7 +487,7 @@ if(params.pilon){
         publishDir "${params.outdir}", mode: 'copy'
         
         input: 
-        file sorted.bam from sv_bam
+        file sorted from sv_bam
         
         output: 
         file "sniffles.vcf" into sniffles_vcf
@@ -495,7 +495,7 @@ if(params.pilon){
         
         script:
         """
-        sniffles -m $sorted.bam -v sniffles.vcf
+        sniffles -m $sorted -v sniffles.vcf
         """
  
  }
