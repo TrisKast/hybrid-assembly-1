@@ -464,7 +464,7 @@ if(params.pilon){
  * STEP 6 SV-Detection
  */
  
- process ngml{
+ process ngmlr{
       publishDir "${params.outdir}", mode: 'copy'
       
       input:
@@ -472,14 +472,14 @@ if(params.pilon){
       file lr from sv_mapping
       
       output:
-      file "ngml_mapping_sorted.bam" into sv_bam
+      file "ngmlr_mapping_sorted.bam" into sv_bam
       file "*" into ngml_results
       
       script:
       """
-      ngmlr -r $fasta -q $lr -o ngml_mapping.sam -t 20 -x ont
-      samtools view -Sb ngml_mapping.sam > ngml_mapping.bam
-      samtools sort ngml_mapping.bam > ngml_mapping_sorted.bam
+      ngmlr -r $fasta -q $lr -o ngmlr_mapping.sam -t 20 -x ont
+      samtools view -Sb ngmlr_mapping.sam > ngmlr_mapping.bam
+      samtools sort ngmlr_mapping.bam > ngmlr_mapping_sorted.bam
       """
  }
  
