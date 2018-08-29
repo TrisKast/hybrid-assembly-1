@@ -8,6 +8,7 @@
  https://github.com/kevinmenden/hybrid-assembly
  #### Authors
  Kevin Menden kevinmenden <kevin.menden@t-online.de> - https://github.com/kevinmenden>
+ Tristan Kast tristankast <tristan.kast@gmx.de> - https://github.com/TrisKast
 ----------------------------------------------------------------------------------------
 */
 //
