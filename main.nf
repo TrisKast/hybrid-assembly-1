@@ -465,7 +465,7 @@ if(params.pilon){
  */
  
  process minimap_sv_detection{
-      publishDir "${params.outdir}", mode: 'copy'
+      publishDir "${params.outdir}/minimap_svdetection", mode: 'copy'
       
       input:
       file fasta from sv_reference
@@ -485,7 +485,7 @@ if(params.pilon){
  }
  
  process sniffles{
-        publishDir "${params.outdir}", mode: 'copy'
+        publishDir "${params.outdir}/sniffles", mode: 'copy'
         
         input: 
         file sorted from sv_bam
