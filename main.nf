@@ -335,7 +335,6 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}/masurca", mode: 'copy'
 
         input:
-        file fasta from fasta
         set val(name), file(sreads) from short_reads_assembly
         file lreads from long_reads_assembly
 
