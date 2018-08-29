@@ -472,14 +472,15 @@ if(params.pilon){
       file lr from sv_mapping
       
       output:
-      file "ngmlr_mapping_sorted.bam" into sv_bam
+      file "aln_sorted.bam" into sv_bam
       file "*" into ngml_results
       
       script:
       """
-      ngmlr -r $fasta -q $lr -o ngmlr_mapping.sam -t 20 -x ont
-      samtools view -Sb ngmlr_mapping.sam > ngmlr_mapping.bam
-      samtools sort ngmlr_mapping.bam > ngmlr_mapping_sorted.bam
+      minimap2 -ax asm5 $fasta $lr > aln.sam
+      #ngmlr -r $fasta -q $lr -o ngmlr_mapping.sam -t 20 -x ont
+      samtools view -Sb aln.sam > aln.bam
+      samtools sort aln.bam > aln_sorted.bam
       """
  }
  
