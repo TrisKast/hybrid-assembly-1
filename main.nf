@@ -100,7 +100,7 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { long_reads_qc; long_reads_filtering }
+        .into { long_reads_qc; long_reads_filtering; sv_detection_mapping }
         
 ///*
 // * Create a channel for reference fasta file
@@ -412,7 +412,7 @@ if(params.pilon){
        """
 
   }
-  pilon_scaffold.into{ quast_input; sv_mapping }
+  pilon_scaffold.into{ quast_input; sv_detection_alignment }
 
 }
 
@@ -469,7 +469,7 @@ if(params.pilon){
       
       input:
       file fasta from sv_reference
-      file lr from sv_mapping
+      file lr from sv_detection_mapping
       
       output:
       file "aln_sorted.bam" into sv_bam
