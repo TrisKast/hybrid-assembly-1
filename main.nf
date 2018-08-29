@@ -370,7 +370,7 @@ if (params.assembler == 'masurca') {
 if(params.pilon){
 
   // Map short reads to assembly with minimap2
-  process minimap {
+  process minimap_correction {
       tag "${sreads[0].baseName}"
       publishDir "${params.outdir}/minimap", mode: 'copy'
 
@@ -423,7 +423,7 @@ if(params.pilon){
 if(params.pilon){
 
     // Assess assembly with quast
-    process quast_w_pilon{
+    process quast{
         publishDir "${params.outdir}", mode: 'copy'
 
         input:
@@ -464,7 +464,7 @@ if(params.pilon){
  * STEP 6 SV-Detection
  */
  
- process ngmlr{
+ process minimap_sv_detection{
       publishDir "${params.outdir}", mode: 'copy'
       
       input:
