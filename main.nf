@@ -36,7 +36,6 @@ def helpMessage() {
 
     Options:
       --lr_type                     Long read technology. One of 'nanopore' | 'pacbio' . Default: 'nanopore'
-      --pilon                       Activates assembly correction with pilon
 
     Other options:
       --outdir                      The output directory where the results will be saved
@@ -65,7 +64,6 @@ params.email = false
 params.plaintext_email = false
 params.assembler = "masurca"
 params.genomeSize = 0
-params.pilon = true
 
 multiqc_config = file(params.multiqc_config)
 
@@ -199,7 +197,7 @@ process fastqc {
 /**
  * STEP 1.2 QC for long reads
  */
-/*process nanoqc {
+process nanoqc {
     tag "${lreads.baseName}"
     publishDir "${params.outdir}/nanoqc", mode: 'copy'
 
@@ -215,7 +213,7 @@ process fastqc {
     source activate nanoqc-env
     NanoPlot $ftype $lreads
     """
-}*/
+}
 
 /**
  * STEP 2 Pre-processing
