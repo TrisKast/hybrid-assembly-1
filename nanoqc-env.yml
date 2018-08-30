@@ -3,3 +3,7 @@ channels:
   - bioconda
 dependencies:
   - nanoqc=0.7.0
+  - nanoget=1.5.0
+  - nanomath=0.21.0
+  - nanoplot=1.11.0
+  - nanoplotter=0.35.4
