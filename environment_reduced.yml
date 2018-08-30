@@ -15,4 +15,3 @@ dependencies:
   - kraken-all=0.10.6_eaf8fb68
   - ngmlr=0.2.7
   - sniffles=1.0.8
-  - nanoqc=0.7.0
