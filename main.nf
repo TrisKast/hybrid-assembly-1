@@ -100,7 +100,7 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { long_reads_qc; long_reads_filtering; sv_detection_mapping }
+        .into { long_reads_qc; long_reads_assembly; long_reads_scaffolding; sv_detection_mapping }
         
 ///*
 // * Create a channel for reference fasta file
@@ -221,7 +221,7 @@ process fastqc {
  * STEP 2 Pre-processing
  */
  
- process prinseq {
+/* process prinseq {
  
     publishDir "${params.outdir}/prinseq", mode: 'copy'
     
@@ -240,6 +240,7 @@ process fastqc {
  
  }
  filtered_longreads.into{ long_reads_assembly; long_reads_scaffolding}
+ */
  
 
 /**
