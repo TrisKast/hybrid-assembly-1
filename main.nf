@@ -368,7 +368,6 @@ if (params.assembler == 'masurca') {
  * STEP 4 Polishing
  */
 
-if(params.pilon){
 
   // Map short reads to assembly with minimap2
   process minimap_correction {
@@ -415,13 +414,11 @@ if(params.pilon){
   }
   pilon_scaffold.into{ quast_input; sv_detection_alignment }
 
-}
 
 /**
  * STEP 4 Assembly Evaluation
  */
 
-if(params.pilon){
 
     // Assess assembly with quast
     process quast{
@@ -438,28 +435,8 @@ if(params.pilon){
         """
         quast $scaffolds -R $fasta --large --threads 20
         """
-
 }
-}else{
-
-    // Assess assembly with quast
-    process quast_wo_pilon{
-        publishDir "${params.outdir}", mode: 'copy'
-
-        input:
-        file fasta from quast_reference_wo_pilon
-        file scaffolds from quast_wo_pilon
-        
-        output:
-        file "*" into quast_results
-
-        script:
-        """
-        quast $scaffolds -R $fasta --large --threads 20
-        """
-
-    }
- }
+ 
  
  /**
  * STEP 6 SV-Detection
