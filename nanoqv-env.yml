@@ -1,0 +1,5 @@
+name: nanoqc-env
+channels:
+  - bioconda
+dependencies:
+  - nanoqc=0.7.0
