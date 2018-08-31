@@ -15,9 +15,4 @@ dependencies:
   - kraken-all=0.10.6_eaf8fb68
   - ngmlr=0.2.7
   - sniffles=1.0.8
-  - last=941
-  - scipy=1.1.0
-  - numpy=1.15.1
-  - scikit-learn=0.19.2
-  - matplotlib=2.2.3
-  - tabix=0.2.5
+
