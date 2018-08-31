@@ -12,8 +12,13 @@ ENV PATH $PATH:/opt/MaSuRCA-3.2.8/bin
 
 RUN conda install -c bioconda samtools
 
+#Environment for nanoqc
 COPY nanoqc-env.yml /
 RUN conda env create -f /nanoqc-env.yml
+
+#Environment for AsmVar
+COPY asmvar-env.yml /
+RUN conda env create -f /asmv-env.yml
 
 # minikraken DB 
 # RUN mkdir /kraken_db/ && cd /kraken_db/ && wget https://ccb.jhu.edu/software/kraken/dl/minikraken.tgz && tar xf minikraken.tgz && rm minikraken.tgz
