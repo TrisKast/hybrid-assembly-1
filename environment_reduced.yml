@@ -19,4 +19,4 @@ dependencies:
   - scipy=1.1.0
   - numpy=1.15.1
   - scikit-learn=0.19.2
-  //- tabix=0.2.5
+  - tabix=0.2.5
