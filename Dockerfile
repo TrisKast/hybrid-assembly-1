@@ -20,6 +20,12 @@ RUN conda env create -f /nanoqc-env.yml
 COPY asmvar-env.yml /
 RUN conda env create -f /asmvar-env.yml
 
+#Install AsmVar and activate base environment afterwards again
+RUN source activate asmvar-env
+RUN git clone https://github.com/bioinformatics-centre/AsmVar.git
+Run cd src/AsmvarDetect; make
+RUN source deactivate
+
 # minikraken DB 
 # RUN mkdir /kraken_db/ && cd /kraken_db/ && wget https://ccb.jhu.edu/software/kraken/dl/minikraken.tgz && tar xf minikraken.tgz && rm minikraken.tgz
 # ENV KRAKEN_DB_PATH="/kraken_db:${KRAKEN_DB_PATH}"
