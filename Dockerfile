@@ -21,8 +21,8 @@ COPY asmvar-env.yml /
 RUN conda env create -f /asmvar-env.yml
 
 #Install AsmVar and activate base environment afterwards again
-#RUN git clone https://github.com/bioinformatics-centre/AsmVar.git /opt/
-#RUN cd /opt/AsmVar/src/AsmvarDetect; make
+RUN git clone https://github.com/bioinformatics-centre/AsmVar.git
+RUN cd AsmVar/src/AsmvarDetect; make
 
 
 # minikraken DB 
