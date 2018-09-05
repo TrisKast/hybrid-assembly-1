@@ -106,7 +106,7 @@ Channel
 Channel
         .fromPath( params.fasta )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { spades_assembly; quast_reference_w_pilon; quast_reference_wo_pilon; sv_reference; sv_reference_assemblytics }
+        .into { spades_assembly; quast_reference_w_pilon; quast_reference_wo_pilon; sv_reference_sniffles; sv_reference_assemblytics }
 
 
 
@@ -444,20 +444,24 @@ if (params.assembler == 'masurca') {
       publishDir "${params.outdir}/minimap_svdetection", mode: 'copy'
       
       input:
-      file fasta from sv_reference
-      file lr from sv_detection_mapping
-      set val(name), file(sreads) from short_reads_correction
+      file fasta from sv_reference_sniffles
+      file lr from sv_detection_sniffles_long
+      set val(name), file(sreads) from sv_detection_sniffles_short
       
       output:
-      file "aln_sorted.bam" into sv_bam
+      file "aln_long_sorted.bam" into sv_bam_long
+      file "aln_short_sorted.bam" into sv_bam_short
       file "*" into ngml_results
       
       script:
       """
-      minimap2 -ax asm5 $fasta $lr > aln.sam
-      #ngmlr -r $fasta -q $lr -o ngmlr_mapping.sam -t 20 -x ont
-      samtools view -Sb aln.sam > aln.bam
-      samtools sort aln.bam > aln_sorted.bam
+      minimap2 -ax map-ont $fasta $lr > aln_long.sam
+      samtools view -Sb aln_long.sam > aln_long.bam
+      samtools sort aln_long.bam > aln_long_sorted.bam
+      
+      minimap2 -ax sr $fasta ${sreads[0]} ${sreads[1]} > aln_short.sam
+      samtools view -Sb aln_short.sam > aln_short.bam
+      samtools sort aln_short.bam > aln_short_sorted.bam
       """
  }
  
@@ -465,15 +469,18 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}/sniffles", mode: 'copy'
         
         input: 
-        file sorted from sv_bam
+        file sorted_short from sv_bam_short
+        file sorted_long from sv_bam_long
         
         output: 
-        file "sniffles.vcf" into sniffles_vcf
+        file "sniffles_short.vcf" into sniffles_short_vcf
+        file "sniffles_long.vcf" into sniffles_long_vcf
         file "*" into sniffles_results
         
         script:
         """
-        sniffles -m $sorted -v sniffles.vcf
+        sniffles -m $sorted_short -v sniffles_short.vcf
+        sniffles -m $sorted_long -v sniffles_long.vcf
         """
  
  }
