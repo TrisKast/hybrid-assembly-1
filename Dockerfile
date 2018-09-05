@@ -10,15 +10,18 @@ RUN curl -fsSL https://github.com/alekseyzimin/masurca/raw/master/MaSuRCA-3.2.8.
 RUN cd /opt/; tar -xzvf MaSuRCA-3.2.8.tar.gz; cd MaSuRCA-3.2.8; ./install.sh
 ENV PATH $PATH:/opt/MaSuRCA-3.2.8/bin
 
+#Install samtools manually because of dependencies issues
 RUN conda install -c bioconda samtools
 
 #Environment for nanoqc
 COPY nanoqc-env.yml /
 RUN conda env create -f /nanoqc-env.yml
 
+#Install Assemblytics
 RUN git clone https://github.com/MariaNattestad/Assemblytics.git
 ENV PATH $PATH:/Assemblytics
 
+#Create python2.7 environment for Assemblytics
 RUN conda create --name python_env python=2.7
 
 #minikraken DB 
