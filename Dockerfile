@@ -16,13 +16,20 @@ RUN conda install -c bioconda samtools
 COPY nanoqc-env.yml /
 RUN conda env create -f /nanoqc-env.yml
 
+RUN git clone https://github.com/MariaNattestad/Assemblytics.git
+ENV PATH $PATH:/Assemblytics
+
+RUN conda create --name python_env python=2.7
+
 #Environment for AsmVar
-COPY asmvar-env.yml /
-RUN conda env create -f /asmvar-env.yml
+#COPY asmvar-env.yml /
+#RUN conda env create -f /asmvar-env.yml
 
 #Install AsmVar and activate base environment afterwards again
-RUN git clone https://github.com/bioinformatics-centre/AsmVar.git
-RUN cd AsmVar/src/AsmvarDetect; make
+#RUN git clone https://github.com/bioinformatics-centre/AsmVar.git
+#RUN cd AsmVar/src/AsmvarDetect; make
+
+
 
 
 # minikraken DB 
