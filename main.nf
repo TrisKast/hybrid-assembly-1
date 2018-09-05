@@ -106,7 +106,7 @@ Channel
 Channel
         .fromPath( params.fasta )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { spades_assembly; quast_reference_w_pilon; quast_reference_wo_pilon; sv_reference }
+        .into { spades_assembly; quast_reference_w_pilon; quast_reference_wo_pilon; sv_reference; sv_reference_assemblytics }
 
 
 
@@ -410,7 +410,7 @@ if (params.assembler == 'masurca') {
        """
 
   }
-  pilon_scaffold.into{ quast_input; sv_detection_alignment }
+  pilon_scaffold.into{ quast_input; sv_detection_alignment; sv_detection_assemblytics_assembly }
 
 
 /**
@@ -476,11 +476,42 @@ if (params.assembler == 'masurca') {
         """
  
  }
+ 
+ process nummer {
+      
+     input:
+     file ref from sv_reference_assemblytics
+     file assembly from sv_detection_assemblytics_assembly
+      
+     output:
+     file "nucmer.delta" into delta_file
+     file "*" into nummer_results
+ 
+     script:
+     """
+     nucmer -maxmatch -l 100 -c 500 $ref $assembly -prefix nucmer
+     """
+ }
+ 
+ process assemblytics {
+ 
+    input:
+    file delta from delta_file
+    
+    output:
+    file "*" into assemblytics_results
+ 
+    script:
+    """
+    conda activate python_env
+    pip install numpy
+    Assemblytics $delta output_prefix 50 /Assemblytics/
+    """
+ 
+ }
 
  
  
-
-
 /*
  * Step 7 MultiQC
  * collect the results
