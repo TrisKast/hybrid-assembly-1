@@ -90,7 +90,7 @@ if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
 Channel
     .fromFilePairs( params.shortReads, size: 2 )
     .ifEmpty { exit 1, "Cannot find any reads matching: ${params.shortReads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!" }
-    .into { short_reads_qc; short_reads_assembly; short_reads_correction }
+    .into { short_reads_qc; short_reads_assembly; short_reads_correction;sv_detection_sniffles_short}
 
 ///*
 // * Create a channel for input long read files
@@ -98,7 +98,7 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { long_reads_qc; long_reads_assembly; long_reads_scaffolding; sv_detection_mapping }
+        .into { long_reads_qc; long_reads_assembly; long_reads_scaffolding; sv_detection_sniffles_long }
         
 ///*
 // * Create a channel for reference fasta file
@@ -446,6 +446,7 @@ if (params.assembler == 'masurca') {
       input:
       file fasta from sv_reference
       file lr from sv_detection_mapping
+      set val(name), file(sreads) from short_reads_correction
       
       output:
       file "aln_sorted.bam" into sv_bam
