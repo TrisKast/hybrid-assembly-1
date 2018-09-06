@@ -507,7 +507,7 @@ if (params.assembler == 'masurca') {
  
      script:
      """
-     nucmer $ref $assembly
+     nucmer -maxmatch -l 100 -c 500 $ref $assembly
      """
  }
  
@@ -521,10 +521,11 @@ if (params.assembler == 'masurca') {
  
     script:
     """
-    source activate python_env
-    pip install numpy
+    source activate python2.7-env
+    
     Assemblytics $delta output_prefix 50 /Assemblytics/
-    source deactivate python_env
+    
+    source deactivate python2.7-env
     """
  
  }
