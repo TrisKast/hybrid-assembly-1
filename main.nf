@@ -494,19 +494,19 @@ if (params.assembler == 'masurca') {
  
  }
  
- process nummer {
+ process nucmer {
       
      input:
      file ref from sv_reference_assemblytics
      file assembly from sv_detection_assemblytics_assembly
       
      output:
-     file "nucmer.delta" into delta_file
+     file "OUT.delta" into delta_file
      file "*" into nummer_results
  
      script:
      """
-     nucmer -maxmatch -l 100 -c 500 $ref $assembly -prefix nucmer
+     nucmer -maxmatch -l 100 -c 500 $ref $assembly -prefix OUT
      """
  }
  
