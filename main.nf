@@ -508,7 +508,7 @@ if (params.assembler == 'masurca') {
      script:
      """
      nucmer $ref $assembly
-     //nucmer -maxmatch -l 100 -c 500 $ref $assembly
+     #nucmer -maxmatch -l 100 -c 500 $ref $assembly
      """
  }
  
