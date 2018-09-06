@@ -212,6 +212,7 @@ process nanoqc {
     """
     source activate nanoqc-env
     NanoPlot $ftype $lreads
+    source deactivate nanoqc-env
     """
 }
 
@@ -506,6 +507,7 @@ if (params.assembler == 'masurca') {
  
      script:
      """
+     source deactivate nanoqc-env
      nucmer $ref $assembly
      """
  }
@@ -520,9 +522,10 @@ if (params.assembler == 'masurca') {
  
     script:
     """
-    conda activate python_env
+    source activate python_env
     pip install numpy
     Assemblytics $delta output_prefix 50 /Assemblytics/
+    source deactivate python_env
     """
  
  }
