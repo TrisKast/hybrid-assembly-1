@@ -1,0 +1,8 @@
+
+name: python2.7-env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - python=2.7
+  - numpy=1.15.1
