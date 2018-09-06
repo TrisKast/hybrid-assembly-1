@@ -507,6 +507,7 @@ if (params.assembler == 'masurca') {
  
      script:
      """
+     source deactivate nanoqc-env
      nucmer $ref $assembly
      """
  }
