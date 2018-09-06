@@ -501,12 +501,12 @@ if (params.assembler == 'masurca') {
      file assembly from sv_detection_assemblytics_assembly
       
      output:
-     file "OUT.delta" into delta_file
+     file "out.delta" into delta_file
      file "*" into nummer_results
  
      script:
      """
-     nucmer $ref $assembly -prefix OUT
+     nucmer $ref $assembly
      """
  }
  
