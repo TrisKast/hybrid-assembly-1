@@ -521,7 +521,6 @@ if (params.assembler == 'masurca') {
  
     script:
     """
-    conda create --name python_env python=2.7
     source activate python_env
     pip install numpy
     Assemblytics $delta output_prefix 50 /Assemblytics/
