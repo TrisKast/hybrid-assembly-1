@@ -1,4 +1,3 @@
-
 name: python2.7-env
 channels:
   - bioconda
