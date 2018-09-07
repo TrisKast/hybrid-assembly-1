@@ -22,8 +22,8 @@ RUN git clone https://github.com/MariaNattestad/Assemblytics.git
 ENV PATH $PATH:/Assemblytics
 
 #Create python2.7 environment for Assemblytics
-COPY python2.7-env.yml /
-RUN conda env create -f /python2.7-env.yml
+COPY python2_7-env.yml /
+RUN conda env create -f /python2_7-env.yml
 
 #Environment for AsmVar
 #COPY asmvar-env.yml /
