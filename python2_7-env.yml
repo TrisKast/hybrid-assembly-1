@@ -1,4 +1,4 @@
-name: python2.7-env
+name: python2_7-env
 channels:
   - bioconda
   - conda-forge
