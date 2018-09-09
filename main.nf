@@ -447,13 +447,13 @@ if (params.assembler == 'masurca') {
       input:
       file fasta from sv_reference_sniffles
       file lr from sv_detection_sniffles_long
-      #file assembly from sv_detection_sniffles_assembly
+      //file assembly from sv_detection_sniffles_assembly
       set val(name), file(sreads) from sv_detection_sniffles_short
       
       output:
       file "aln_long_sorted.bam" into sv_bam_long
       file "aln_short_sorted.bam" into sv_bam_short
-      #file "aln_assembly_sorted.bam" into sv_bam_assembly
+      //file "aln_assembly_sorted.bam" into sv_bam_assembly
       file "*" into ngml_results
       
       script:
@@ -466,9 +466,9 @@ if (params.assembler == 'masurca') {
       samtools view -Sb aln_short.sam > aln_short.bam
       samtools sort aln_short.bam > aln_short_sorted.bam
       
-      #minimap2 -ax map-ont $fasta $assembly > aln_assembly.sam
-      #samtools view -Sb aln_assembly.sam > aln_assembly.bam
-      #samtools sort aln_assembly.bam > aln_assembly_sorted.bam
+      //minimap2 -ax map-ont $fasta $assembly > aln_assembly.sam
+      //samtools view -Sb aln_assembly.sam > aln_assembly.bam
+      //samtools sort aln_assembly.bam > aln_assembly_sorted.bam
       """
  }
  
@@ -478,7 +478,7 @@ if (params.assembler == 'masurca') {
         input: 
         file sorted_short from sv_bam_short
         file sorted_long from sv_bam_long
-        #file sorted_assembly from sv_bam_assembly
+        //file sorted_assembly from sv_bam_assembly
         
         output: 
         file "sniffles_short.vcf" into sniffles_short_vcf
@@ -490,7 +490,7 @@ if (params.assembler == 'masurca') {
         """
         sniffles -m $sorted_short -v sniffles_short.vcf
         sniffles -m $sorted_long -v sniffles_long.vcf
-        #sniffles -m $sorted_assembly -v sniffles_assembly.vcf
+        //sniffles -m $sorted_assembly -v sniffles_assembly.vcf
         """
  
  }
