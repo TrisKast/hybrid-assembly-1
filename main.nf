@@ -483,7 +483,7 @@ if (params.assembler == 'masurca') {
         output: 
         file "sniffles_short.vcf" into sniffles_short_vcf
         file "sniffles_long.vcf" into sniffles_long_vcf
-        #file "sniffles_assembly.vcf" into sniffles_assembly_vcf
+        //file "sniffles_assembly.vcf" into sniffles_assembly_vcf
         file "*" into sniffles_results
         
         script:
