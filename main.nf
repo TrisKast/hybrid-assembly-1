@@ -456,6 +456,12 @@ if (params.assembler == 'masurca') {
       //file "aln_assembly_sorted.bam" into sv_bam_assembly
       file "*" into ngml_results
       
+      //Stuff for the script:
+      //minimap2 -ax map-ont $fasta $assembly > aln_assembly.sam
+      //samtools view -Sb aln_assembly.sam > aln_assembly.bam
+      //samtools sort aln_assembly.bam > aln_assembly_sorted.bam
+      
+      
       script:
       """
       minimap2 -ax map-ont $fasta $lr > aln_long.sam
@@ -465,10 +471,6 @@ if (params.assembler == 'masurca') {
       minimap2 -ax sr $fasta ${sreads[0]} ${sreads[1]} > aln_short.sam
       samtools view -Sb aln_short.sam > aln_short.bam
       samtools sort aln_short.bam > aln_short_sorted.bam
-      
-      #minimap2 -ax map-ont $fasta $assembly > aln_assembly.sam
-      #samtools view -Sb aln_assembly.sam > aln_assembly.bam
-      #samtools sort aln_assembly.bam > aln_assembly_sorted.bam
       """
  }
  
@@ -486,11 +488,13 @@ if (params.assembler == 'masurca') {
         //file "sniffles_assembly.vcf" into sniffles_assembly_vcf
         file "*" into sniffles_results
         
+        //Stuff for the script:
+        //sniffles -m $sorted_assembly -v sniffles_assembly.vcf
+        
         script:
         """
         sniffles -m $sorted_short -v sniffles_short.vcf
         sniffles -m $sorted_long -v sniffles_long.vcf
-        //sniffles -m $sorted_assembly -v sniffles_assembly.vcf
         """
  
  }
