@@ -466,9 +466,9 @@ if (params.assembler == 'masurca') {
       samtools view -Sb aln_short.sam > aln_short.bam
       samtools sort aln_short.bam > aln_short_sorted.bam
       
-      //minimap2 -ax map-ont $fasta $assembly > aln_assembly.sam
-      //samtools view -Sb aln_assembly.sam > aln_assembly.bam
-      //samtools sort aln_assembly.bam > aln_assembly_sorted.bam
+      #minimap2 -ax map-ont $fasta $assembly > aln_assembly.sam
+      #samtools view -Sb aln_assembly.sam > aln_assembly.bam
+      #samtools sort aln_assembly.bam > aln_assembly_sorted.bam
       """
  }
  
