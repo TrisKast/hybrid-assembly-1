@@ -464,7 +464,7 @@ if (params.assembler == 'masurca') {
       
       script:
       """
-      minimap2 -ax map-ont $fasta $lr > aln_long.sam
+      ngmlr -t 20 -r $fasta -q $lr -o aln_long.sam -x ont
       samtools view -Sb aln_long.sam > aln_long.bam
       samtools sort aln_long.bam > aln_long_sorted.bam
       
