@@ -464,11 +464,11 @@ if (params.assembler == 'masurca') {
       
       script:
       """
-      minimap2 -ax map-ont $fasta $lr > aln_long.sam
+      minimap2 -ax map-ont $fasta $lr --MD > aln_long.sam
       samtools view -Sb aln_long.sam > aln_long.bam
       samtools sort aln_long.bam > aln_long_sorted.bam
       
-      minimap2 -ax sr $fasta ${sreads[0]} ${sreads[1]} > aln_short.sam
+      minimap2 -ax sr $fasta ${sreads[0]} ${sreads[1]} --MD > aln_short.sam
       samtools view -Sb aln_short.sam > aln_short.bam
       samtools sort aln_short.bam > aln_short_sorted.bam
       """
