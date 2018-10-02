@@ -522,7 +522,7 @@ if (params.assembler == 'masurca') {
     """
     source activate python2_7-env
     
-    Assemblytics $delta output_prefix 50 /Assemblytics/
+    Assemblytics $delta assemblytics 50 /Assemblytics/
     
     source deactivate python2_7-env
     """
