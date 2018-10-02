@@ -493,6 +493,7 @@ if (params.assembler == 'masurca') {
  }
  
  process nucmer {
+     publishDir "${params.outdir}/nucmer", mode: 'copy'
       
      input:
      file ref from sv_reference_assemblytics
@@ -509,6 +510,7 @@ if (params.assembler == 'masurca') {
  }
  
  process assemblytics {
+      publishDir "${params.outdir}/assemblytics", mode: 'copy'
  
     input:
     file delta from delta_file
