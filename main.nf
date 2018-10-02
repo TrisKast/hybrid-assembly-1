@@ -447,24 +447,17 @@ if (params.assembler == 'masurca') {
       input:
       file fasta from sv_reference_sniffles
       file lr from sv_detection_sniffles_long
-      //file assembly from sv_detection_sniffles_assembly
       set val(name), file(sreads) from sv_detection_sniffles_short
       
       output:
       file "aln_long_sorted.bam" into sv_bam_long
       file "aln_short_sorted.bam" into sv_bam_short
-      //file "aln_assembly_sorted.bam" into sv_bam_assembly
       file "*" into ngml_results
-      
-      //Stuff for the script:
-      //minimap2 -ax map-ont $fasta $assembly > aln_assembly.sam
-      //samtools view -Sb aln_assembly.sam > aln_assembly.bam
-      //samtools sort aln_assembly.bam > aln_assembly_sorted.bam
       
       
       script:
       """
-      minimap2 -ax map-ont $fasta $lr --MD > aln_long.sam
+      ngmlr -t 14 -r $fasta -q $lr -o aln_long.sam -x ont
       samtools view -Sb aln_long.sam > aln_long.bam
       samtools sort aln_long.bam > aln_long_sorted.bam
       
