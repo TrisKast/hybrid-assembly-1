@@ -501,7 +501,7 @@ if (params.assembler == 'masurca') {
       
      output:
      file "out.delta" into delta_file
-     file "*" into nummer_results
+     file "*" into nucmer_results
  
      script:
      """
