@@ -105,7 +105,7 @@ Channel
 // */
 Channel
         .fromPath( params.fasta )
-        .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
+        .ifEmpty { exit 1, "Cannot find any reference file matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
         .into { spades_assembly; quast_reference_w_pilon; quast_reference_wo_pilon; sv_reference_sniffles; sv_reference_assemblytics }
 
 
@@ -172,6 +172,8 @@ process get_software_versions {
     quast --version > v_quast.txt
     minimap2 --version > v_minimap.txt
     pilon --version > v_pilon.txt
+    nucmer -v > v_nucmer.txt
+    ngmlr --version v_ngmlr.txt
     scrape_software_versions.py > software_versions_mqc.yaml
     """
 }
@@ -366,14 +368,35 @@ if (params.assembler == 'masurca') {
 }
 
 /**
- * STEP 4 Polishing
+ * STEP 4 Assembly Evaluation before polishing
  */
 
+ // Assess assembly without polishing with quast
+    process quast_plain_assembly{
+        publishDir "${params.outdir}/quast_plain_assembly", mode: 'copy'
+
+        input:
+        file fasta from quast_reference_wo_pilon
+        file scaffolds from quast_wo_pilon
+
+        output:
+        file "*" into quast_results_without_polishing
+
+        script:
+        """
+        quast $scaffolds -R $fasta --large --threads 20
+        """
+}
+
+
+/**
+ * STEP 5 Polishing
+ */
 
   // Map short reads to assembly with minimap2
-  process minimap_correction {
+  process minimap {
       tag "${sreads[0].baseName}"
-      publishDir "${params.outdir}/minimap", mode: 'copy'
+      publishDir "${params.outdir}/minimap2", mode: 'copy'
 
       input:
       file assembly from assembly_mapping
@@ -390,7 +413,6 @@ if (params.assembler == 'masurca') {
       samtools sort sreads_assembly_aln.bam > sreads_assembly_aln.sorted.bam
       """
   }
-
 
 
   // Polish assembly with pilon
@@ -417,13 +439,13 @@ if (params.assembler == 'masurca') {
 
 
 /**
- * STEP 4 Assembly Evaluation
+ * STEP 6 Assembly Evaluation after polishing
  */
 
 
     // Assess assembly with quast
-    process quast{
-        publishDir "${params.outdir}", mode: 'copy'
+    process quast_after_polishing{
+        publishDir "${params.outdir}/quast_after_polishing", mode: 'copy'
 
         input:
         file fasta from quast_reference_w_pilon
@@ -440,11 +462,15 @@ if (params.assembler == 'masurca') {
  
  
  /**
- * STEP 6 SV-Detection
+ * STEP 7 SV-Detection
  */
  
- process minimap_sv_detection{
-      publishDir "${params.outdir}/minimap_svdetection", mode: 'copy'
+ /**
+ * STEP 7.1 Mapping-based approach
+ */
+ 
+ process ngmlr{
+      publishDir "${params.outdir}/ngmlr", mode: 'copy'
       
       input:
       file fasta from sv_reference_sniffles
@@ -494,6 +520,10 @@ if (params.assembler == 'masurca') {
  
  }
  
+  /**
+ * STEP 7.2 Assembly-based approach
+ */
+ 
  process nucmer {
      publishDir "${params.outdir}/nucmer", mode: 'copy'
       
@@ -534,7 +564,7 @@ if (params.assembler == 'masurca') {
  
  
 /*
- * Step 7 MultiQC
+ * Step 8 MultiQC
  * collect the results
  */
 process multiqc {
