@@ -121,6 +121,7 @@ summary['Long Reads']   = params.longReads
 summary['Fasta Ref']    = params.fasta
 summary['Assembler']    = params.assembler
 summary['Genome Size']    = params.genomeSize
+summary['Masurca Genome Size']    = params.masurca_genomesize
 summary['Max Memory']   = params.max_memory
 summary['Max CPUs']     = params.max_cpus
 summary['Max Time']     = params.max_time
