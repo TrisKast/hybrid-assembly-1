@@ -22,7 +22,7 @@ def helpMessage() {
 
     The typical command for running the pipeline is as follows:
 
-    nextflow run tristankast/hybrid_assembly --shortReads '*_R{1,2}.fastq.gz' --longReads 'nano_reads.fastq.gz' --assembler masurca --masurca_genomsize 100200000  -profile galaxy
+    nextflow run tristankast/hybrid_assembly --shortReads '*_R{1,2}.fastq.gz' --longReads nano_reads.fastq.gz --assembler masurca --masurca_genomsize 100200000  -profile galaxy
 
     Mandatory arguments:
       --assembler                   The assembler pipeline to choose. One of 'spades' | 'canu' | 'masurca'
@@ -32,7 +32,6 @@ def helpMessage() {
 
     References                      If you want to use a reference genome
       --fasta                       Path to Fasta reference
-      --genome                      Name of iGenomes reference to use
 
     Options:
       --lr_type                     Long read technology. One of 'nanopore' | 'pacbio' . Default: 'nanopore'
@@ -83,6 +82,7 @@ custom_runName = params.name
 if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
   custom_runName = workflow.runName
 }
+
 
 /*
  * Create a channel for input short read files
