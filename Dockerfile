@@ -11,7 +11,7 @@ RUN cd /opt/; tar -xzvf MaSuRCA-3.2.8.tar.gz; cd MaSuRCA-3.2.8; ./install.sh
 ENV PATH $PATH:/opt/MaSuRCA-3.2.8/bin
 
 #Install samtools manually because of dependencies issues
-RUN conda install -c bioconda samtools
+RUN conda install -c bioconda -c r samtools --override-channels
 
 #Environment for nanoqc
 COPY nanoqc-env.yml /
