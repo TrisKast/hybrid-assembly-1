@@ -453,7 +453,7 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}/quast_after_polishing", mode: 'copy'
 
         input:
-        file fasta quast_reference_after_polishing
+        file fasta from quast_reference_after_polishing
         file scaffolds from quast_assembly_after_polishing
 
         output:
