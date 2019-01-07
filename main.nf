@@ -106,7 +106,7 @@ Channel
 Channel
         .fromPath( params.fasta )
         .ifEmpty { exit 1, "Cannot find any reference file matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { spades_assembly; quast_reference_w_pilon; quast_reference_wo_pilon; sv_reference_sniffles; sv_reference_assemblytics }
+        .into { spades_assembly; quast_reference_before_polishing; quast_reference_after_polishing; sv_reference_sniffles; sv_reference_assemblytics }
 
 
 
@@ -243,7 +243,8 @@ process nanoqc {
     """
  
  }
- filtered_longreads.into{ long_reads_assembly; long_reads_scaffolding}
+ filtered_longreads.into{ long_reads_assembly; 
+}
  */
  
 
@@ -346,6 +347,8 @@ if (params.assembler == 'masurca') {
         output:
         file "masurca_config.txt" into masurca_config_file
         file "final.genome.scf.fasta" into assembly_results
+        
+        
         script:
         cg = params.close_gaps ? "--close_gaps" : ""
         hc = params.high_cov ? "--high_cov" : ""
@@ -364,7 +367,7 @@ if (params.assembler == 'masurca') {
         mv CA.mr*/final.genome.scf.fasta final.genome.scf.fasta
         """
     }
-    assembly_results.into{ assembly_mapping; assembly_pilon; quast_wo_pilon }
+    assembly_results.into{ assembly_mapping; assembly_pilon; quast_without_polishing }
     
 }
 
@@ -373,12 +376,13 @@ if (params.assembler == 'masurca') {
  */
 
  // Assess assembly without polishing with quast
-    process quast_plain_assembly{
+    process quast_before_polishing{
         publishDir "${params.outdir}/quast_plain_assembly", mode: 'copy'
 
         input:
-        file fasta from quast_reference_wo_pilon
-        file scaffolds from quast_wo_pilon
+        file fasta from quast_reference_before_polishing
+        file scaffolds from quast_without_polishing
+        
 
         output:
         file "*" into quast_results_without_polishing
@@ -395,7 +399,7 @@ if (params.assembler == 'masurca') {
  */
 
   // Map short reads to assembly with minimap2
-  process minimap {
+  process minimap2_assembly_polishing {
       tag "${sreads[0].baseName}"
       publishDir "${params.outdir}/minimap2", mode: 'copy'
 
@@ -436,7 +440,7 @@ if (params.assembler == 'masurca') {
        """
 
   }
-  pilon_scaffold.into{ quast_input; sv_detection_sniffles_assembly; sv_detection_assemblytics_assembly }
+  pilon_scaffold.into{ quast_assembly_after_polishing; sv_detection_sniffles_assembly; sv_detection_assemblytics_assembly }
 
 
 /**
@@ -449,8 +453,8 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}/quast_after_polishing", mode: 'copy'
 
         input:
-        file fasta from quast_reference_w_pilon
-        file scaffolds from quast_input
+        file fasta quast_reference_after_polishing
+        file scaffolds from quast_assembly_after_polishing
 
         output:
         file "*" into quast_results
@@ -470,7 +474,7 @@ if (params.assembler == 'masurca') {
  * STEP 7.1 Mapping-based approach
  */
  
- process ngmlr{
+ process minimap2_SV_calling{
       publishDir "${params.outdir}/ngmlr", mode: 'copy'
       
       input:
@@ -479,20 +483,14 @@ if (params.assembler == 'masurca') {
       set val(name), file(sreads) from sv_detection_sniffles_short
       
       output:
-      file "aln_long_sorted.bam" into sv_bam_long
-      file "aln_short_sorted.bam" into sv_bam_short
-      file "*" into ngml_results
+      file "aln_long_sorted.bam" into sv_bam
       
       
       script:
       """
-      ngmlr -t 14 -r $fasta -q $lr -o aln_long.sam -x ont
+      minimap2 -ax map-ont $fasta $lr --MD > aln_long.sam
       samtools view -Sb aln_long.sam > aln_long.bam
       samtools sort aln_long.bam > aln_long_sorted.bam
-      
-      minimap2 -ax sr $fasta ${sreads[0]} ${sreads[1]} --MD > aln_short.sam
-      samtools view -Sb aln_short.sam > aln_short.bam
-      samtools sort aln_short.bam > aln_short_sorted.bam
       """
  }
  
@@ -500,23 +498,17 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}/sniffles", mode: 'copy'
         
         input: 
-        file sorted_short from sv_bam_short
-        file sorted_long from sv_bam_long
-        //file sorted_assembly from sv_bam_assembly
+        file sorted_long from sv_bam
+
         
         output: 
-        file "sniffles_short.vcf" into sniffles_short_vcf
-        file "sniffles_long.vcf" into sniffles_long_vcf
-        //file "sniffles_assembly.vcf" into sniffles_assembly_vcf
+        file "sniffles_only_long_reads.vcf" into sniffles_only_long_reads_vcf
         file "*" into sniffles_results
         
-        //Stuff for the script:
-        //sniffles -m $sorted_assembly -v sniffles_assembly.vcf
         
         script:
         """
-        sniffles -m $sorted_short -v sniffles_short.vcf
-        sniffles -m $sorted_long -v sniffles_long.vcf
+        sniffles -m $sorted_long -v sniffles_only_long_reads.vcf
         """
  
  }
