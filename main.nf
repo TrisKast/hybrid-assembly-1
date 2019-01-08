@@ -475,7 +475,7 @@ if (params.assembler == 'masurca') {
  */
  
  process minimap2_SV_calling{
-      publishDir "${params.outdir}/ngmlr", mode: 'copy'
+      publishDir "${params.outdir}/minimap2_sv_calling", mode: 'copy'
       
       input:
       file fasta from sv_reference_sniffles
