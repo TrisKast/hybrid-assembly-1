@@ -98,7 +98,7 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { long_reads_qc; long_reads_assembly; long_reads_scaffolding; sv_detection_sniffles_long }
+        .into { long_reads_qc; long_reads_assembly; sv_detection_sniffles_long }
         
 ///*
 // * Create a channel for reference fasta file
@@ -300,7 +300,7 @@ if (params.assembler == 'spades') {
  * 3. polish assembly with pilon
  * 4. quast for assesment
  */
-if (params.assembler == 'canu') {
+/*if (params.assembler == 'canu') {
     if (params.genomeSize == 0){
         log.error "No genome size specified. Necessary for Canu assembly workflow"
         exit 1
@@ -330,11 +330,11 @@ if (params.assembler == 'canu') {
     assembly_results.into{ assembly_mapping; assembly_pilon; quast_wo_pilon }
 
 }
-
+*/
 /**
  * MaSuRCA assembly workflow
  */
-if (params.assembler == 'masurca') {
+/*if (params.assembler == 'masurca') {
     // Generate MaSuRCA config file and run assembler
     process masurca {
         tag "$name"
@@ -370,11 +370,11 @@ if (params.assembler == 'masurca') {
     assembly_results.into{ assembly_mapping; assembly_pilon; quast_without_polishing }
     
 }
-
+/*
 /**
  * STEP 4 Assembly Evaluation before polishing
  */
-
+/*
  // Assess assembly without polishing with quast
     process quast_before_polishing{
         publishDir "${params.outdir}/quast_plain_assembly", mode: 'copy'
@@ -392,7 +392,7 @@ if (params.assembler == 'masurca') {
         quast $scaffolds -R $fasta --large --threads 20
         """
 }
-
+*/
 
 /**
  * STEP 5 Polishing
