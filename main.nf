@@ -90,7 +90,7 @@ if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
 Channel
     .fromFilePairs( params.shortReads, size: 2 )
     .ifEmpty { exit 1, "Cannot find any reads matching: ${params.shortReads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!" }
-    .into { short_reads_qc; short_reads_assembly; short_reads_correction;sv_detection_sniffles_short}
+    .into { short_reads_qc; short_reads_assembly; short_reads_correction}
 
 ///*
 // * Create a channel for input long read files
@@ -480,7 +480,7 @@ if (params.assembler == 'masurca') {
       input:
       file fasta from sv_reference_sniffles
       file lr from sv_detection_sniffles_long
-      set val(name), file(sreads) from sv_detection_sniffles_short
+
       
       output:
       file "aln_long_sorted.bam" into sv_bam
