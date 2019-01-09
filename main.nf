@@ -566,8 +566,10 @@ process multiqc {
     input:
     file multiqc_config
     file ('fastqc/*') from fastqc_results.collect()
+    file ('nanoqc/* ') nanoqc_results.collect()
     file ('software_versions/*') from software_versions_yaml
     file ('quast_results/*') from quast_results
+   
 
     output:
     file "*multiqc_report.html" into multiqc_report
