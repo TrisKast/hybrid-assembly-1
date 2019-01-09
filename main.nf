@@ -337,7 +337,7 @@ process nanoqc {
 if (params.assembler == 'masurca') {
     // Generate MaSuRCA config file and run assembler
     process masurca {
-        tag "$name"
+        //tag "${lreads.baseName}"
         publishDir "${params.outdir}/masurca", mode: 'copy'
 
         input:
@@ -400,7 +400,7 @@ if (params.assembler == 'masurca') {
 
   // Map short reads to assembly with minimap2
   process minimap2_assembly_polishing {
-      tag "${sreads[0].baseName}"
+      //tag "${sreads[0].baseName}"
       publishDir "${params.outdir}/minimap2", mode: 'copy'
 
       input:
