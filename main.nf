@@ -257,7 +257,7 @@ process nanoqc {
  * 1. Hybrid assembly with SPAdes
  * 2. quast for assesment
  */
-if (params.assembler == 'spades') {
+/*if (params.assembler == 'spades') {
 
     // Create assembly with SPAdes
     process spades {
@@ -289,7 +289,7 @@ if (params.assembler == 'spades') {
         """
 
     }
-    assembly_results.into{ assembly_mapping; assembly_pilon; quast_wo_pilon }
+    assembly_results.into{ assembly_mapping; assembly_pilon}
 
 }
 
@@ -334,7 +334,7 @@ if (params.assembler == 'spades') {
 /**
  * MaSuRCA assembly workflow
  */
-/*if (params.assembler == 'masurca') {
+if (params.assembler == 'masurca') {
     // Generate MaSuRCA config file and run assembler
     process masurca {
         tag "$name"
@@ -367,10 +367,10 @@ if (params.assembler == 'spades') {
         mv CA.mr*/final.genome.scf.fasta final.genome.scf.fasta
         """
     }
-    assembly_results.into{ assembly_mapping; assembly_pilon; quast_without_polishing }
+    assembly_results.into{ assembly_mapping; assembly_pilon}
     
 }
-/*
+
 /**
  * STEP 4 Assembly Evaluation before polishing
  */
@@ -440,7 +440,7 @@ if (params.assembler == 'spades') {
        """
 
   }
-  pilon_scaffold.into{ quast_assembly_after_polishing; sv_detection_sniffles_assembly; sv_detection_assemblytics_assembly }
+  pilon_scaffold.into{ quast_assembly_after_polishing; sv_detection_assemblytics_assembly }
 
 
 /**
