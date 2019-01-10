@@ -106,7 +106,7 @@ Channel
 Channel
         .fromPath( params.fasta )
         .ifEmpty { exit 1, "Cannot find any reference file matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { spades_assembly; quast_reference_before_polishing; quast_reference_after_polishing; sv_reference_sniffles; sv_reference_assemblytics }
+        .into {quast_reference_after_polishing; sv_reference_sniffles; sv_reference_assemblytics }
 
 
 
@@ -566,7 +566,7 @@ process multiqc {
     input:
     file multiqc_config
     file ('fastqc/*') from fastqc_results.collect()
-    file ('nanoqc/* ') nanoqc_results.collect()
+    file ('nanoqc/* ') from nanoqc_results.collect()
     file ('software_versions/*') from software_versions_yaml
     file ('quast_results/*') from quast_results
    
