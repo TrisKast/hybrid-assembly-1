@@ -90,7 +90,7 @@ if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
 Channel
     .fromFilePairs( params.shortReads, size: 2 )
     .ifEmpty { exit 1, "Cannot find any reads matching: ${params.shortReads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!" }
-    .into { short_reads_qc; short_reads_assembly; short_reads_correction}
+    .into { sr_qc; sr_assembly; sr_polishing}
 
 ///*
 // * Create a channel for input long read files
@@ -98,7 +98,7 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { long_reads_qc; long_reads_assembly; sv_detection_sniffles_long }
+        .into { lr_qc; lr_assembly; lr_sv_calling }
         
 ///*
 // * Create a channel for reference fasta file
@@ -106,7 +106,7 @@ Channel
 Channel
         .fromPath( params.fasta )
         .ifEmpty { exit 1, "Cannot find any reference file matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into {quast_reference_after_polishing; sv_reference_sniffles; sv_reference_assemblytics }
+        .into {quast_ref; sv_ref_sniffles; sv_ref_assemblytics }
 
 
 
@@ -188,7 +188,7 @@ process fastqc {
         saveAs: {filename -> filename.indexOf(".zip") > 0 ? "zips/$filename" : "$filename"}
 
     input:
-    set val(name), file(reads) from short_reads_qc
+    set val(name), file(reads) from sr_qc
 
     output:
     file "*_fastqc.{zip,html}" into fastqc_results
@@ -207,7 +207,7 @@ process nanoqc {
     publishDir "${params.outdir}/nanoqc", mode: 'copy'
 
     input:
-    file lreads from long_reads_qc
+    file lreads from lr_qc
 
     output:
     file "*" into nanoqc_results
@@ -266,8 +266,8 @@ process nanoqc {
 
         input:
         file fasta from spades_assembly
-        set val(name), file(sreads) from short_reads_assembly
-        file lreads from long_reads_assembly
+        set val(name), file(sreads) from sr_assembly
+        file lreads from lr_assembly
         
         output:
         file "scaffolds.fasta" into assembly_results
@@ -341,12 +341,11 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}/masurca", mode: 'copy'
 
         input:
-        set val(name), file(sreads) from short_reads_assembly
-        file lreads from long_reads_assembly
+        set val(name), file(sreads) from sr_assembly
+        file lreads from lr_assembly
 
         output:
-        file "masurca_config.txt" into masurca_config_file
-        file "final.genome.scf.fasta" into assembly_results
+        file "final.genome.scf.fasta" into assembly_scaffolds
         
         
         script:
@@ -367,7 +366,7 @@ if (params.assembler == 'masurca') {
         mv CA.mr*/final.genome.scf.fasta final.genome.scf.fasta
         """
     }
-    assembly_results.into{ assembly_mapping; assembly_pilon}
+    assembly_scaffolds.into{ assembly_mapping; assembly_polish}
     
 }
 
@@ -399,17 +398,16 @@ if (params.assembler == 'masurca') {
  */
 
   // Map short reads to assembly with minimap2
-  process minimap2_assembly_polishing {
+  process minimap2_1 {
       //tag "${sreads[0].baseName}"
       publishDir "${params.outdir}/minimap2", mode: 'copy'
 
       input:
       file assembly from assembly_mapping
-      set val(name), file(sreads) from short_reads_correction
+      set val(name), file(sreads) from sr_polishing
 
       output:
-      file "*" into minimap_alignment_results
-      file "*.sorted.bam" into short_reads_mapped_bam
+      file "*.sorted.bam" into mapped_sr
 
       script:
       """
@@ -425,11 +423,10 @@ if (params.assembler == 'masurca') {
        publishDir "${params.outdir}/pilon", mode: 'copy'
 
        input:
-       file sr_bam from short_reads_mapped_bam
-       file assembly from assembly_pilon
+       file sr_bam from mapped_sr
+       file assembly from assembly_polish
 
        output:
-       file "*" into pilon_results
        file "pilon.fasta" into pilon_scaffold
 
        script:
@@ -440,7 +437,7 @@ if (params.assembler == 'masurca') {
        """
 
   }
-  pilon_scaffold.into{ quast_assembly_after_polishing; sv_detection_assemblytics_assembly }
+  pilon_scaffold.into{evaluation; sv_detection}
 
 
 /**
@@ -449,15 +446,16 @@ if (params.assembler == 'masurca') {
 
 
     // Assess assembly with quast
-    process quast_after_polishing{
-        publishDir "${params.outdir}/quast_after_polishing", mode: 'copy'
+    process quast{
+        publishDir "${params.outdir}/quast", mode: 'copy'
 
         input:
-        file fasta from quast_reference_after_polishing
-        file scaffolds from quast_assembly_after_polishing
-
+        file fasta from quast_ref
+        file scaffolds from evaluation
+        
         output:
         file "*" into quast_results
+        
 
         script:
         """
@@ -474,16 +472,15 @@ if (params.assembler == 'masurca') {
  * STEP 7.1 Mapping-based approach
  */
  
- process minimap2_SV_calling{
+ process minimap2_2{
       publishDir "${params.outdir}/minimap2_sv_calling", mode: 'copy'
       
       input:
-      file fasta from sv_reference_sniffles
-      file lr from sv_detection_sniffles_long
-
+      file fasta from sv_ref_sniffles
+      file lr from lr_sv_calling
       
       output:
-      file "aln_long_sorted.bam" into sv_bam
+      file "aln_long_sorted.bam" into sr_lr_bam
       
       
       script:
@@ -498,13 +495,9 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}/sniffles", mode: 'copy'
         
         input: 
-        file sorted_long from sv_bam
+        file sorted_long from sr_lr_bam
 
-        
-        output: 
-        file "sniffles_only_long_reads.vcf" into sniffles_only_long_reads_vcf
-        file "*" into sniffles_results
-        
+        output:         
         
         script:
         """
@@ -521,12 +514,11 @@ if (params.assembler == 'masurca') {
      publishDir "${params.outdir}/nucmer", mode: 'copy'
       
      input:
-     file ref from sv_reference_assemblytics
-     file assembly from sv_detection_assemblytics_assembly
+     file ref from sv_ref_assemblytics
+     file assembly from sv_detection
       
      output:
      file "out.delta" into delta_file
-     file "*" into nucmer_results
  
      script:
      """
@@ -541,7 +533,6 @@ if (params.assembler == 'masurca') {
     file delta from delta_file
     
     output:
-    file "*" into assemblytics_results
  
     script:
     """
@@ -572,8 +563,6 @@ process multiqc {
    
 
     output:
-    file "*multiqc_report.html" into multiqc_report
-    file "*_data"
 
     script:
     rtitle = custom_runName ? "--title \"$custom_runName\"" : ''
