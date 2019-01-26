@@ -98,7 +98,7 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { lr_qc; lr_assembly; lr_sv_calling }
+        .into { lr_qc; lr_assembly}
         
 ///*
 // * Create a channel for reference fasta file
@@ -106,7 +106,7 @@ Channel
 Channel
         .fromPath( params.fasta )
         .ifEmpty { exit 1, "Cannot find any reference file matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into {quast_ref; sv_ref_sniffles; sv_ref_assemblytics }
+        .into {quast_ref}
 
 
 
@@ -471,7 +471,8 @@ if (params.assembler == 'masurca') {
  /**
  * STEP 7.1 Mapping-based approach
  */
- 
+
+ /**
  process minimap2_2{
       publishDir "${params.outdir}/minimap2_sv_calling", mode: 'copy'
       
@@ -489,7 +490,7 @@ if (params.assembler == 'masurca') {
       samtools view -Sb aln_long.sam > aln_long.bam
       samtools sort aln_long.bam > aln_long_sorted.bam
       """
- }
+ } 
  
  process sniffles{
         publishDir "${params.outdir}/sniffles", mode: 'copy'
@@ -504,12 +505,13 @@ if (params.assembler == 'masurca') {
         sniffles -m $sorted_long -v sniffles_only_long_reads.vcf
         """
  
- }
+ } */
  
   /**
  * STEP 7.2 Assembly-based approach
  */
  
+   /**
  process nucmer {
      publishDir "${params.outdir}/nucmer", mode: 'copy'
       
@@ -545,7 +547,7 @@ if (params.assembler == 'masurca') {
  
  }
 
- 
+  */
  
 /*
  * Step 8 MultiQC
