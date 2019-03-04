@@ -29,7 +29,7 @@ mv nextflow ~/bin
 See [nextflow.io](https://www.nextflow.io/) and [NGI-NextflowDocs](https://github.com/SciLifeLab/NGI-NextflowDocs) for further instructions on how to install and configure Nextflow.
 
 ## 2) Install the Pipeline
-This pipeline itself needs no installation - NextFlow will automatically fetch it from GitHub if `kevinmenden/hybrid-assembly` is specified as the pipeline name.
+This pipeline itself needs no installation - NextFlow will automatically fetch it from GitHub if `TrisKast/hybrid_assembly` is specified as the pipeline name.
 
 ### Offline use
 
