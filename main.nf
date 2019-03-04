@@ -63,7 +63,6 @@ params.email = false
 params.plaintext_email = false
 params.assembler = "masurca"
 params.genomeSize = 0
-
 multiqc_config = file(params.multiqc_config)
 
 // Validate inputs
