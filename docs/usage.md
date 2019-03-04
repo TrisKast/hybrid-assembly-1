@@ -12,7 +12,7 @@ NXF_OPTS='-Xms1g -Xmx4g'
 ## Running the pipeline
 A typical command for running the pipeline is as follows:
 ```bash
-nextflow run kevinmenden/hybrid-assembly --shortReads '*_R{1,2}.fastq.gz' --longReads long_reads.fastq.gz --assembler spades
+nextflow run TrisKast/hybrid_assembly --shortReads '*_R{1,2}.fastq.gz' --longReads long_reads.fastq.gz --assembler spades
  -profile docker
 ```
 
