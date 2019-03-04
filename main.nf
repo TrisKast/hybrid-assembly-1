@@ -346,6 +346,7 @@ if (params.assembler == 'masurca') {
 
         output:
         file "final.genome.scf.fasta" into assembly_scaffolds
+        file "*" into masurca_results
         
         
         script:
@@ -407,6 +408,7 @@ if (params.assembler == 'masurca') {
       set val(name), file(sreads) from sr_polishing
 
       output:
+      file "*" into minimap2_polishing_results
       file "*.sorted.bam" into mapped_sr
 
       script:
@@ -427,6 +429,7 @@ if (params.assembler == 'masurca') {
        file assembly from assembly_polish
 
        output:
+       file "*" into pilon_results
        file "pilon.fasta" into pilon_scaffold
 
        script:
@@ -481,6 +484,7 @@ if (params.assembler == 'masurca') {
       file lr from lr_sv_calling
       
       output:
+      file "*" into minimap2_sv_calling_results
       file "aln_long_sorted.bam" into sr_lr_bam
       
       
@@ -498,11 +502,13 @@ if (params.assembler == 'masurca') {
         input: 
         file sorted_long from sr_lr_bam
 
-        output:         
+        output: 
+        file "*" into sniffles_results
+        
         
         script:
         """
-        sniffles -m $sorted_long -v sniffles_only_long_reads.vcf
+        sniffles -s 3 -m $sorted_long -v sniffles_only_long_reads.vcf
         """
  
  } */
@@ -521,6 +527,7 @@ if (params.assembler == 'masurca') {
       
      output:
      file "out.delta" into delta_file
+     file "*" into nucmer_results
  
      script:
      """
@@ -535,6 +542,7 @@ if (params.assembler == 'masurca') {
     file delta from delta_file
     
     output:
+    file "*" into assemblytics_results
  
     script:
     """
