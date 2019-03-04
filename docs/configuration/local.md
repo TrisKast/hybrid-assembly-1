@@ -11,10 +11,10 @@ First, install docker on your system: [Docker Installation Instructions](https:/
 
 Then, simply run the analysis pipeline:
 ```bash
-nextflow run kevinmenden/hybrid-assembly -profile docker --reads '<path to your reads>'
+nextflow run TrisKast/hybrid_assembly -profile docker --reads '<path to your reads>'
 ```
 
-Nextflow will recognise `kevinmenden/hybrid-assembly` and download the pipeline from GitHub. The `-profile docker` configuration lists the [hybrid-assembly](https://hub.docker.com/r/hybrid-assembly/) image that we have created and is hosted at dockerhub, and this is downloaded.
+Nextflow will recognise `TrisKast/hybrid_assembly` and download the pipeline from GitHub. The `-profile docker` configuration lists the [hybrid-assembly](https://hub.docker.com/r/hybrid-assembly/) image that we have created and is hosted at dockerhub, and this is downloaded.
 
 For more information about how to work with reference genomes, see [`docs/configuration/reference_genomes.md`](docs/configuration/reference_genomes.md).
 
