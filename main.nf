@@ -105,7 +105,7 @@ Channel
 Channel
         .fromPath( params.fasta )
         .ifEmpty { exit 1, "Cannot find any reference file matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into {quast_ref}
+        .into {ch_quast_plain_reference; ch_quast_polished_reference}
 
 
 
@@ -226,7 +226,8 @@ process nanoqc {
 
 if (params.longread_trimming){
     process prinseq_longreads {
-        publishDir "${params.outdir}/prinseq/longreads", mode: 'copy'
+      tag "${lreads.baseName}"
+      publishDir "${params.outdir}/prinseq/longreads", mode: 'copy'
 
         input:
         file lreads from ch_longreads_filtering
@@ -252,7 +253,8 @@ if (params.longread_trimming){
 
 if (params.shortread_trimming){
     process prinseq_shortreads {
-        publishDir "${params.outdir}/prinseq/shortreads", mode: 'copy'
+      tag "$name"
+      publishDir "${params.outdir}/prinseq/shortreads", mode: 'copy'
 
         input:
         set val(name), file(sreads) from ch_shortreads_filtering
@@ -355,6 +357,7 @@ if (params.shortread_trimming){
     assembly_results.into{ assembly_mapping; assembly_pilon; quast_wo_pilon }
 
 }
+
 */
 /**
  * MaSuRCA assembly workflow
@@ -363,7 +366,7 @@ if (params.shortread_trimming){
 if (params.assembler == 'masurca') {
     // Generate MaSuRCA config file and run assembler
     process masurca {
-        //tag "${lreads.baseName}"
+        tag "${lreads.baseName}"
         publishDir "${params.outdir}/masurca", mode: 'copy'
 
         input:
@@ -393,25 +396,25 @@ if (params.assembler == 'masurca') {
         mv CA.mr*/final.genome.scf.fasta final.genome.scf.fasta
         """
     }
-    assembly_scaffolds.into{ assembly_mapping; assembly_polish}
+    assembly_scaffolds.into{ assembly_mapping; assembly_polish; ch_plain_assembly_qc}
 
 }
 
 /**
  * STEP 4 Assembly Evaluation before polishing
  */
-/*
+
  // Assess assembly without polishing with quast
     process quast_before_polishing{
-        publishDir "${params.outdir}/quast_plain_assembly", mode: 'copy'
+        publishDir "${params.outdir}/quast/before_polishing", mode: 'copy'
 
         input:
-        file fasta from quast_reference_before_polishing
-        file scaffolds from quast_without_polishing
+        file fasta from ch_quast_plain_reference
+        file scaffolds from ch_plain_assembly_qc
 
 
         output:
-        file "*" into quast_results_without_polishing
+        file "*" into ch_quast_results_plain
 
         script:
         """
@@ -594,9 +597,9 @@ process multiqc {
     file ('fastqc/*') from fastqc_results.collect()
     file ('nanoqc/* ') from nanoqc_results.collect()
     file ('software_versions/*') from software_versions_yaml
-    file ('prinseq/longreads/*') from prinseq_longreads_results
-    file ('prinseq/shortreads/*') from prinseq_shortreads_results
-    //file ('quast_results/*') from quast_results
+    if(params.longread_trimming){ file ('prinseq/longreads/*') from prinseq_longreads_results }
+    if(params.shortread_trimming){ file ('prinseq/shortreads/*') from prinseq_shortreads_results }
+    file ('quast_results/before_polishing') from ch_quast_results_plain
 
 
     output:

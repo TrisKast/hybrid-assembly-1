@@ -1,7 +1,7 @@
 FROM continuumio/miniconda
 
-COPY environment_reduced.yml /
-RUN conda env create -f /environment_reduced.yml && conda clean -a
+COPY base-env.yml /
+RUN conda env create -f /base-env.yml && conda clean -a
 ENV PATH /opt/conda/envs/assembly-env/bin:$PATH
 
 # Install MaSuRCA 3.2.7

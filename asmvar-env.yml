@@ -1,5 +1,0 @@
-name: asmvar-env
-channels:
-  - conda-forge
-dependencies:
-  - matplotlib=2.2.3

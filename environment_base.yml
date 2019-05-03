@@ -1,4 +1,4 @@
-name: assembly-env
+name: base-env
 channels:
   - bioconda
   - conda-forge
@@ -12,12 +12,12 @@ dependencies:
   - multiqc=1.6
   - quast=5.0
   - prinseq=0.20.4
-  - kraken-all=0.10.6_eaf8fb68
   - ngmlr=0.2.7
   - sniffles=1.0.10
-  - last=941
   - scipy=1.1.0
   - numpy=1.15.1
   - scikit-learn=0.19.2
   - tabix=0.2.5
   - mummer=3.23
+#  - last=941
+#  - kraken-all=0.10.6_eaf8fb68
