@@ -25,16 +25,6 @@ ENV PATH $PATH:/Assemblytics
 COPY python2_7-env.yml /
 RUN conda env create -f /python2_7-env.yml
 
-#Environment for AsmVar
-#COPY asmvar-env.yml /
-#RUN conda env create -f /asmvar-env.yml
-
-#Install AsmVar and activate base environment afterwards again
-#RUN git clone https://github.com/bioinformatics-centre/AsmVar.git
-#RUN cd AsmVar/src/AsmvarDetect; make
-
-#minikraken DB 
+#minikraken DB
 #RUN mkdir /kraken_db/ && cd /kraken_db/ && wget https://ccb.jhu.edu/software/kraken/dl/minikraken.tgz && tar xf minikraken.tgz && rm minikraken.tgz
 #ENV KRAKEN_DB_PATH="/kraken_db:${KRAKEN_DB_PATH}"
-
-
