@@ -22,12 +22,12 @@ def helpMessage() {
 
     The typical command for running the pipeline is as follows:
 
-    nextflow run tristankast/hybrid_assembly --shortReads '*_R{1,2}.fastq.gz' --longReads nano_reads.fastq.gz --assembler masurca --masurca_genomsize 100200000  -profile galaxy
+    nextflow run tristankast/hybrid_assembly --shortReads '*_R{1,2}.fastq.gz' --longReads /path/to/longreads.fastq.gz --assembler masurca --masurca_genomsize 100200000  -profile galaxy
 
     Mandatory arguments:
       --assembler                   The assembler pipeline to choose. One of 'spades' | 'canu' | 'masurca'
-      --shortReads                  The paired short reads
-      --longReads                   The long reads
+      --shortReads                  Path to the file containing the paired shortreads
+      --longReads                   Path to the file containing longreads
       -profile                      Hardware config to use.
 
     References                      If you want to use a reference genome
@@ -89,7 +89,7 @@ if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
 Channel
     .fromFilePairs( params.shortReads, size: 2 )
     .ifEmpty { exit 1, "Cannot find any reads matching: ${params.shortReads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!" }
-    .into { sr_qc; sr_assembly; sr_polishing}
+    .into { ch_longreads_qc; ch_shortreads_filtering; sr_polishing}
 
 ///*
 // * Create a channel for input long read files
@@ -97,8 +97,8 @@ Channel
 Channel
         .fromPath( params.longReads )
         .ifEmpty { exit 1, "Cannot find any long reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!" }
-        .into { lr_qc; lr_assembly}
-        
+        .into { ch_longreads_qc; ch_longreads_filtering}
+
 ///*
 // * Create a channel for reference fasta file
 // */
@@ -187,7 +187,7 @@ process fastqc {
         saveAs: {filename -> filename.indexOf(".zip") > 0 ? "zips/$filename" : "$filename"}
 
     input:
-    set val(name), file(reads) from sr_qc
+    set val(name), file(reads) from ch_shortreads_qc
 
     output:
     file "*_fastqc.{zip,html}" into fastqc_results
@@ -206,7 +206,7 @@ process nanoqc {
     publishDir "${params.outdir}/nanoqc", mode: 'copy'
 
     input:
-    file lreads from lr_qc
+    file lreads from ch_longreads_qc
 
     output:
     file "*" into nanoqc_results
@@ -221,31 +221,57 @@ process nanoqc {
 }
 
 /**
- * STEP 2 Pre-processing
+ * STEP 2.1 Pre-processing of the longreads
  */
- 
-/* process prinseq {
- 
-    publishDir "${params.outdir}/prinseq", mode: 'copy'
-    
-    input:
-    file lreads from long_reads_filtering
-    
-    output:
-    file "prinseq_good.fasta" into filtered_longreads
-    file "*" into prinseq_results
-    
-    script:
-    """
-    prinseq-lite.pl -fasta $lreads -min_len 500 -out_good prinseq_good
 
-    """
- 
- }
- filtered_longreads.into{ long_reads_assembly; 
+if (params.longread_trimming){
+    process prinseq_longreads {
+        publishDir "${params.outdir}/prinseq/longreads", mode: 'copy'
+
+        input:
+        file lreads from ch_longreads_filtering
+
+        output:
+        file "*out_good*" into ch_longreads_assembly
+        file "*.output.txt" into prinseq_longreads_results
+
+        script:
+        ftype = (lreads.extension == "fasta" || lreads.extension == "fa") ? "--fasta" : "--fastq"
+        """
+        prinseq-lite.pl $ftype $lreads -min_len 300 -out_good "${lreads.baseName}"_out_good
+        """
+
+    }
+} else {
+    ch_longreads_filtering.into{ch_longreads_assembly}
 }
+
+/**
+ * STEP 2.2 Pre-processing of the shortreads
  */
- 
+
+if (params.shortread_trimming){
+    process prinseq_shortreads {
+        publishDir "${params.outdir}/prinseq/shortreads", mode: 'copy'
+
+        input:
+        set val(name), file(sreads) from ch_shortreads_filtering
+
+        output:
+        file "*out_good*" into ch_shortreads_assembly
+        file "*.output.txt" into prinseq_shortreads_results
+
+        script:
+        """
+        prinseq-lite.pl -fastq ${sreads[0]} -fastq2 ${sreads[1]} -min_len 35 -out_good "${sreads.baseName}"_out_good
+        """
+
+    }
+} else {
+    ch_shortreads_filtering.into{ch_shortreads_assembly}
+}
+
+
 
 /**
  * STEP 3 Assembly
@@ -267,7 +293,7 @@ process nanoqc {
         file fasta from spades_assembly
         set val(name), file(sreads) from sr_assembly
         file lreads from lr_assembly
-        
+
         output:
         file "scaffolds.fasta" into assembly_results
         file "contigs.fasta" into assembly_results_contigs
@@ -311,7 +337,7 @@ process nanoqc {
 
         input:
         file lreads from long_reads_assembly
-        
+
         output:
         file "*contigs.fasta" into assembly_results
         file "*" into canu_results
@@ -333,6 +359,7 @@ process nanoqc {
 /**
  * MaSuRCA assembly workflow
  */
+
 if (params.assembler == 'masurca') {
     // Generate MaSuRCA config file and run assembler
     process masurca {
@@ -340,14 +367,14 @@ if (params.assembler == 'masurca') {
         publishDir "${params.outdir}/masurca", mode: 'copy'
 
         input:
-        set val(name), file(sreads) from sr_assembly
-        file lreads from lr_assembly
+        set val(name), file(sreads) from ch_shortreads_assembly
+        file lreads from ch_longreads_assembly
 
         output:
         file "final.genome.scf.fasta" into assembly_scaffolds
         file "*" into masurca_results
-        
-        
+
+
         script:
         cg = params.close_gaps ? "--close_gaps" : ""
         hc = params.high_cov ? "--high_cov" : ""
@@ -367,7 +394,7 @@ if (params.assembler == 'masurca') {
         """
     }
     assembly_scaffolds.into{ assembly_mapping; assembly_polish}
-    
+
 }
 
 /**
@@ -381,7 +408,7 @@ if (params.assembler == 'masurca') {
         input:
         file fasta from quast_reference_before_polishing
         file scaffolds from quast_without_polishing
-        
+
 
         output:
         file "*" into quast_results_without_polishing
@@ -398,7 +425,7 @@ if (params.assembler == 'masurca') {
  */
 
   // Map short reads to assembly with minimap2
-  process minimap2_1 {
+/*  process minimap2_1 {
       //tag "${sreads[0].baseName}"
       publishDir "${params.outdir}/minimap2", mode: 'copy'
 
@@ -440,13 +467,12 @@ if (params.assembler == 'masurca') {
 
   }
   pilon_scaffold.into{evaluation; sv_detection}
-
-
+*/
 /**
  * STEP 6 Assembly Evaluation after polishing
  */
 
-
+/*
     // Assess assembly with quast
     process quast{
         publishDir "${params.outdir}/quast", mode: 'copy'
@@ -454,22 +480,22 @@ if (params.assembler == 'masurca') {
         input:
         file fasta from quast_ref
         file scaffolds from evaluation
-        
+
         output:
         file "*" into quast_results
-        
+
 
         script:
         """
         quast $scaffolds -R $fasta --large --threads 20
         """
-}
- 
- 
+}*/
+
+
  /**
  * STEP 7 SV-Detection
  */
- 
+
  /**
  * STEP 7.1 Mapping-based approach
  */
@@ -477,85 +503,85 @@ if (params.assembler == 'masurca') {
  /**
  process minimap2_2{
       publishDir "${params.outdir}/minimap2_sv_calling", mode: 'copy'
-      
+
       input:
       file fasta from sv_ref_sniffles
       file lr from lr_sv_calling
-      
+
       output:
       file "*" into minimap2_sv_calling_results
       file "aln_long_sorted.bam" into sr_lr_bam
-      
-      
+
+
       script:
       """
       minimap2 -ax map-ont $fasta $lr --MD > aln_long.sam
       samtools view -Sb aln_long.sam > aln_long.bam
       samtools sort aln_long.bam > aln_long_sorted.bam
       """
- } 
- 
+ }
+
  process sniffles{
         publishDir "${params.outdir}/sniffles", mode: 'copy'
-        
-        input: 
+
+        input:
         file sorted_long from sr_lr_bam
 
-        output: 
+        output:
         file "*" into sniffles_results
-        
-        
+
+
         script:
         """
         sniffles -s 3 -m $sorted_long -v sniffles_only_long_reads.vcf
         """
- 
+
  } */
- 
+
   /**
  * STEP 7.2 Assembly-based approach
  */
- 
+
    /**
  process nucmer {
      publishDir "${params.outdir}/nucmer", mode: 'copy'
-      
+
      input:
      file ref from sv_ref_assemblytics
      file assembly from sv_detection
-      
+
      output:
      file "out.delta" into delta_file
      file "*" into nucmer_results
- 
+
      script:
      """
      nucmer $ref $assembly
      """
  }
- 
+
  process assemblytics {
       publishDir "${params.outdir}/assemblytics", mode: 'copy'
- 
+
     input:
     file delta from delta_file
-    
+
     output:
     file "*" into assemblytics_results
- 
+
     script:
     """
     source activate python2_7-env
-    
+
     Assemblytics $delta assemblytics 50 /Assemblytics/
-    
+
     source deactivate python2_7-env
     """
- 
+
  }
 
   */
- 
+
 /*
  * Step 8 MultiQC
  * collect the results
@@ -568,8 +594,10 @@ process multiqc {
     file ('fastqc/*') from fastqc_results.collect()
     file ('nanoqc/* ') from nanoqc_results.collect()
     file ('software_versions/*') from software_versions_yaml
-    file ('quast_results/*') from quast_results
-   
+    file ('prinseq/longreads/*') from prinseq_longreads_results
+    file ('prinseq/shortreads/*') from prinseq_shortreads_results
+    //file ('quast_results/*') from quast_results
+
 
     output:
 
