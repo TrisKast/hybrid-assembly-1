@@ -421,7 +421,7 @@ if (params.assembler == 'masurca') {
         quast $scaffolds -R $fasta --large --threads 20
         """
 }
-*/
+
 
 /**
  * STEP 5 Polishing
