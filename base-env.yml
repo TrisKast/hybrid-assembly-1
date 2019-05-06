@@ -3,21 +3,21 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - minimap2=2.14
-  - pilon=1.22
-  - canu=1.7.1
-  - spades=3.12.0
-  - fastqc=0.11.7
-  - gnuplot=5.2.3
-  - multiqc=1.6
-  - quast=5.0
+  - minimap2=2.17
+  - pilon=1.23
+  - fastqc=0.11.8
+  - gnuplot=5.2.6
+  - multiqc=1.7
+  - quast=5.0.2
   - prinseq=0.20.4
   - ngmlr=0.2.7
-  - sniffles=1.0.10
-  - scipy=1.1.0
-  - numpy=1.15.1
+  - sniffles=1.0.11
+  - scipy=1.2.1
+  - numpy=1.16.3
   - scikit-learn=0.19.2
-  - tabix=0.2.5
+  - tabix=0.2.6
   - mummer=3.23
 #  - last=941
 #  - kraken-all=0.10.6_eaf8fb68
+#  - canu=1.8
+#  - spades=3.13.0

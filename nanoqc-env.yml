@@ -2,8 +2,8 @@ name: nanoqc-env
 channels:
   - bioconda
 dependencies:
-  - nanoqc=0.7.0
-  - nanoget=1.5.0
-  - nanomath=0.21.0
-  - nanoplot=1.11.0
-  - nanoplotter=0.35.4
+  - nanoqc=0.8.1
+  - nanoget=1.8.0
+  - nanomath=0.23.1
+  - nanoplot=1.23.1
+  - nanoplotter=1.6.1
