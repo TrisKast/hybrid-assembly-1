@@ -265,7 +265,7 @@ if (params.shortread_trimming){
 
         script:
         """
-        prinseq-lite.pl -fastq ${sreads[0]} -fastq2 ${sreads[1]} -min_len 35 -out_good "${sreads.baseName}"_out_good
+        prinseq-lite.pl -fastq ${sreads[0]} -fastq2 ${sreads[1]} -min_len 35 -out_good "$name"_out_good
         """
 
     }
