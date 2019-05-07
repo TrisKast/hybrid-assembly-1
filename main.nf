@@ -89,7 +89,7 @@ if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
 Channel
     .fromFilePairs( params.shortReads, size: 2 )
     .ifEmpty { exit 1, "Cannot find any reads matching: ${params.shortReads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!" }
-    .into { ch_longreads_qc; ch_shortreads_filtering; sr_polishing}
+    .into { ch_shortreads_qc; ch_shortreads_filtering; sr_polishing}
 
 ///*
 // * Create a channel for input long read files
