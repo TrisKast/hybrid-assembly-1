@@ -598,10 +598,10 @@ process multiqc {
     file ('nanoqc/* ') from nanoqc_results.collect()
     file ('software_versions/*') from software_versions_yaml
     //if(params.longread_trimming){
-    file ('prinseq/longreads/*') from prinseq_longreads_results.collect()
+    //file ('prinseq/longreads/*') from prinseq_longreads_results.collect()
     //}
     //if(params.shortread_trimming){
-    file ('prinseq/shortreads/*') from prinseq_shortreads_results.collect()
+    //file ('prinseq/shortreads/*') from prinseq_shortreads_results.collect()
     //}
     file ('quast_results/before_polishing') from ch_quast_results_plain.collect()
 
