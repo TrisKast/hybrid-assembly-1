@@ -24,7 +24,7 @@ ENV PATH $PATH:/Assemblytics
 COPY python2_7-env.yml /
 RUN conda env create -f /python2_7-env.yml
 
-ENV PATH /opt/conda/envs/assembly-env/bin:$PATH
+ENV PATH /opt/conda/envs/base-env/bin:$PATH
 
 
 #minikraken DB
